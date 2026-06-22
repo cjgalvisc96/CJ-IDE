@@ -116,6 +116,17 @@ map("n", "fu", fold("zR"), { desc = "Unfold all" })
 -- copy the whole file to the system clipboard
 map("n", "vv", "<cmd>%yank +<cr>", { desc = "Copy whole file" })
 
+-- copy the current file's absolute path to the system clipboard
+map("n", "<leader>cp", function()
+  local path = vim.fn.expand("%:p")
+  if path == "" then
+    vim.notify("No file in this buffer", vim.log.levels.WARN)
+    return
+  end
+  vim.fn.setreg("+", path)
+  vim.notify("Copied path: " .. path)
+end, { desc = "Copy file path" })
+
 -- operator shortcuts: change/yank word/line/block in one step
 map("n", "dw", "dwi", { desc = "Delete word -> insert" })
 map("n", "du", "bdwa", { desc = "Delete word under cursor -> append" })

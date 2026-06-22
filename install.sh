@@ -20,6 +20,7 @@ set -euo pipefail
 REPO_URL="${CJ_IDE_REPO_URL:-https://github.com/cjgalvisc96/CJ-IDE.git}"
 DO_BACKUP=0
 DO_TUIS=1
+DO_CHECK=0
 
 usage() {
   cat <<'EOF'
@@ -29,6 +30,7 @@ Usage:
   ./install.sh            install everything + write config
   ./install.sh --backup   move an existing ~/.config/nvim aside first
   ./install.sh --no-tuis  skip the TUI tools
+  ./install.sh --check    verify the expected tools are on PATH, then exit
   ./install.sh --help
 
 Environment overrides:
@@ -40,6 +42,7 @@ for arg in "$@"; do
   case "$arg" in
     --backup)  DO_BACKUP=1 ;;
     --no-tuis) DO_TUIS=0 ;;
+    --check)   DO_CHECK=1 ;;
     -h|--help) usage; exit 0 ;;
     *) echo "Unknown flag: $arg (try --help)" >&2; exit 1 ;;
   esac
@@ -130,49 +133,36 @@ mise_use() {
   else FAILED+=("$spec"); warn "could not install: $spec"; fi
 }
 
-install_runtimes() {
-  info "Installing runtimes via mise (node, go, python, neovim)..."
-  mise_use "node@lts"
-  mise_use "go@latest"
-  mise_use "python@latest"
-  mise_use "neovim@latest"
+# Print the tool specs listed under "# [<section>]" in the manifest, skipping
+# blanks/comments. (index() keeps the bracketed header a literal, not a regex.)
+specs_in_section() {
+  # specs_in_section <manifest-file> <section>
+  awk -v sec="[$2]" '
+    /^[[:space:]]*#[[:space:]]*\[/ { inseg = (index($0, sec) > 0); next }
+    inseg && NF && $0 !~ /^[[:space:]]*#/ { print }
+  ' "$1"
+}
+
+install_section() {
+  # install_section <section> <human label>
+  local section="$1" label="$2" spec
+  info "Installing $label via mise..."
+  while IFS= read -r spec; do
+    [ -n "$spec" ] && mise_use "$spec"
+  done < <(specs_in_section "$TOOLS_FILE" "$section")
   "$MISE_BIN" reshim >/dev/null 2>&1 || true
 }
 
-install_cli_tools() {
-  info "Installing CLI tools via mise (ripgrep, fd, fzf, tree-sitter)..."
-  mise_use "ripgrep@latest"
-  mise_use "fd@latest"
-  mise_use "fzf@latest"
-  mise_use "tree-sitter@latest"   # nvim-treesitter (main branch) compiles parsers with this
-}
-
-install_lsp_and_formatters() {
-  info "Installing LSP servers + formatters via mise..."
-  # Static binaries / registry
-  mise_use "ruff@latest"                 # python lint + format
-  mise_use "lua-language-server@latest"
-  # Go backend (needs go, installed above)
-  mise_use "go:golang.org/x/tools/gopls@latest"
-  mise_use "go:mvdan.cc/gofumpt@latest"
-  mise_use "go:golang.org/x/tools/cmd/goimports@latest"
-  # npm backend (needs node, installed above)
-  mise_use "npm:basedpyright@latest"                 # python types -> basedpyright-langserver
-  mise_use "npm:yaml-language-server@latest"
-  mise_use "npm:vscode-langservers-extracted@latest" # provides vscode-json-language-server
-  mise_use "npm:prettier@latest"                     # yaml/json formatting
-  "$MISE_BIN" reshim >/dev/null 2>&1 || true
-}
-
-install_tuis() {
-  if [ "$DO_TUIS" -eq 0 ]; then info "Skipping TUIs (--no-tuis)"; return; fi
-  info "Installing TUIs via mise..."
-  mise_use "lazygit@latest"
-  mise_use "lazydocker@latest"
-  mise_use "k9s@latest"
-  mise_use "go:github.com/jorgerojas26/lazysql@latest"
-  mise_use "go:github.com/Lifailon/lazyjournal@latest"
-  "$MISE_BIN" reshim >/dev/null 2>&1 || true
+install_tools() {
+  # Runtimes first so the go:/npm: backends below can build against them.
+  install_section runtimes "runtimes (node, go, python, neovim)"
+  install_section cli      "CLI tools (ripgrep, fd, fzf, tree-sitter)"
+  install_section lsp      "LSP servers + formatters"
+  if [ "$DO_TUIS" -eq 1 ]; then
+    install_section tuis "TUIs"
+  else
+    info "Skipping TUIs (--no-tuis)"
+  fi
 }
 
 # --- shell rc: activate mise ----------------------------------------------- #
@@ -195,32 +185,36 @@ ensure_shell_rc() {
   fi
 }
 
-# --- locate the config/nvim shipped with this repo ------------------------- #
+# --- locate this repo's files (clone if run via curl | bash) --------------- #
 CLONE_TMP=""
-cleanup() { [ -n "$CLONE_TMP" ] && rm -rf "$CLONE_TMP"; }
+ROOT=""        # repo root once resolved
+TOOLS_FILE=""  # $ROOT/config/mise/tools.txt
+cleanup() { [ -n "$CLONE_TMP" ] && rm -rf "$CLONE_TMP"; return 0; }
 trap cleanup EXIT
 
-config_source() {
-  # Echo a path to a config/nvim directory, cloning the repo if needed.
+resolve_repo_root() {
+  # Set ROOT to a directory containing config/nvim + config/mise, cloning if
+  # the script was piped from the web and the files aren't on disk.
   if [ -n "$SCRIPT_DIR" ] && [ -d "$SCRIPT_DIR/config/nvim" ]; then
-    printf '%s\n' "$SCRIPT_DIR/config/nvim"; return
+    ROOT="$SCRIPT_DIR"
+  else
+    info "Repo files not found locally — cloning $REPO_URL ..."
+    CLONE_TMP="$(mktemp -d)"
+    if git clone --depth 1 "$REPO_URL" "$CLONE_TMP" >/dev/null 2>&1 \
+       && [ -d "$CLONE_TMP/config/nvim" ]; then
+      ROOT="$CLONE_TMP"
+    else
+      err "Could not obtain repo files (clone failed or directory missing)."
+      exit 1
+    fi
   fi
-  info "config/nvim not found locally — cloning $REPO_URL ..." >&2
-  CLONE_TMP="$(mktemp -d)"
-  if git clone --depth 1 "$REPO_URL" "$CLONE_TMP" >/dev/null 2>&1 \
-     && [ -d "$CLONE_TMP/config/nvim" ]; then
-    printf '%s\n' "$CLONE_TMP/config/nvim"; return
-  fi
-  err "Could not obtain config/nvim (clone failed or directory missing)."
-  return 1
+  TOOLS_FILE="$ROOT/config/mise/tools.txt"
+  [ -f "$TOOLS_FILE" ] || { err "Missing tool manifest: $TOOLS_FILE"; exit 1; }
 }
 
 # --- install the Neovim config --------------------------------------------- #
 write_config() {
-  local cfg="$HOME/.config/nvim" src
-  if ! src="$(config_source)"; then
-    FAILED+=("nvim-config"); return
-  fi
+  local cfg="$HOME/.config/nvim" src="$ROOT/config/nvim"
 
   if [ -d "$cfg" ] && [ -n "$(ls -A "$cfg" 2>/dev/null)" ]; then
     if [ "$DO_BACKUP" -eq 1 ]; then
@@ -238,19 +232,45 @@ write_config() {
   ok "Installed config -> $cfg"
 }
 
+# --- doctor: verify the expected tools resolve on PATH --------------------- #
+# Binary names (not mise specs) — several differ from their package name.
+EXPECTED_BINS=(
+  nvim node go python rg fd fzf tree-sitter
+  ruff lua-language-server gopls gofumpt goimports
+  basedpyright-langserver yaml-language-server vscode-json-language-server prettier
+  lazygit lazydocker k9s lazysql lazyjournal
+)
+doctor() {
+  export PATH="$HOME/.local/share/mise/shims:$HOME/.local/bin:$PATH"
+  info "Checking expected tools on PATH..."
+  local missing=0 b
+  for b in "${EXPECTED_BINS[@]}"; do
+    if command -v "$b" >/dev/null 2>&1; then ok "$b"
+    else warn "missing: $b"; missing=$((missing + 1)); fi
+  done
+  if [ "$missing" -eq 0 ]; then ok "All expected tools found."
+  else warn "$missing tool(s) missing — re-run ./install.sh, or check mise."; fi
+  return 0
+}
+
 # --- run ------------------------------------------------------------------- #
 main() {
+  if [ "$DO_CHECK" -eq 1 ]; then
+    hr; info "CJ-IDE doctor"; hr
+    doctor
+    exit 0
+  fi
+
   hr; info "CJ-IDE bootstrap (mise-powered)"; hr
   detect_pm
+  resolve_repo_root
   install_build_tools
   install_clipboard
   install_mise
-  install_runtimes
-  install_cli_tools
-  install_lsp_and_formatters
-  install_tuis
+  install_tools
   ensure_shell_rc
   write_config
+  doctor
 
   hr; info "Summary"; hr
   [ "${#INSTALLED[@]}" -gt 0 ] && ok "Installed: ${INSTALLED[*]}"

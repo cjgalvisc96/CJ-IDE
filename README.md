@@ -80,12 +80,12 @@ Markdown.
 
 - **tokyonight** theme + **lualine** statusline + **which-key** hints
 - **nvim-treesitter** — syntax-aware highlighting & indentation
-- **fzf-lua** — fuzzy finder (files, grep, symbols, diagnostics)
+- **fzf-lua** — fuzzy finder (files, grep, symbols, diagnostics) + LSP nav
 - **neo-tree** — file tree as a side panel docked on the right
 - **gitsigns** — hunk signs, staging, blame
 - **blink.cmp** — completion + signature help, fed by **schemastore** for JSON/YAML
 - **nvim-lspconfig** — native LSP (`lua_ls`, `basedpyright`, `ruff`, `gopls`, `yamlls`, `jsonls`)
-- **conform.nvim** — format-on-save (`ruff`, `gofumpt`/`goimports`, `prettier`)
+- **conform.nvim** — format-on-save (`ruff`, `gofumpt`/`goimports`, `prettier`), toggle with `:FormatToggle`
 - **toggleterm** — TUIs in floating terminals
 
 **TUIs** (mapped under `<leader>T`): lazygit, lazydocker, lazysql, k9s,
@@ -100,7 +100,8 @@ Leader is **Space**.
 | `<leader>ff` / `fg` / `fb` | Find files / live grep / buffers |
 | `<leader>fs` / `fd` / `fh` / `fr` | Symbols / diagnostics / help / resume |
 | `<leader>e` | File tree (neo-tree, right panel) |
-| `gd` / `gr` / `gi` / `K` | Definition / references / implementation / hover |
+| `gd` / `grr` / `gri` / `gy` | Definition / references / implementation / type def (fzf-lua) |
+| `K` | Hover (Neovim default) · `grn` rename · `gra` code action (defaults) |
 | `<leader>cr` / `ca` / `cf` | Rename / code action / format |
 | `[d` / `]d` | Prev / next diagnostic |
 | `]c` / `[c` | Next / prev git hunk |
@@ -110,20 +111,55 @@ Leader is **Space**.
 | `<leader>Tg Td Tq Tk Tj` | lazygit, lazydocker, lazysql, k9s, lazyjournal |
 | `<C-x>` (terminal) | Back to normal mode |
 
+### VSCode-style keys
+
+CJ-IDE ships a **VSCode/VSCodeVim-flavored** keymap in `lua/config/user.lua`
+(loaded last, so it's the default). Highlights:
+
+| Keys | Action |
+|------|--------|
+| `<leader>p` / `<leader>a` | Quick-open file / find in files |
+| `<leader>q` / `<leader>t` | Close / new editor |
+| `<leader>s` | Split editor (vertical) |
+| `<leader>l` / `<leader>h` | Focus split right / left |
+| `<leader>b` | Switch buffer (fuzzy) |
+| `<leader>m` | Toggle comment (normal + visual) |
+| `<leader>j` / `<leader>k` | Move line/selection down / up |
+| `<C-b>` / `<C-t>` | Toggle sidebar / new terminal |
+| `<C-h>` `<C-l>` · `<C-Left>` `<C-Right>` | Focus / resize windows |
+| `f` `F` `fa` `fu` | Fold / unfold (recursive / all) |
+| `J` / `K` | Next / previous paragraph |
+
+> These intentionally remap some core Vim keys (`f`, `J`, `K`, `dw`/`df`/`yf`…)
+> to match VSCode muscle memory. Edit `lua/config/user.lua` to change or remove
+> any of them — it's the one file meant for personal taste.
+
 ## Project layout
 
 ```
 install.sh                 one-shot installer (tools via mise + config)
 prune.sh                   uninstaller (reverses install.sh)
-config/nvim/               the Neovim config (installed to ~/.config/nvim)
-├── init.lua               entry point
-└── lua/
-    ├── config/            options, keymaps, autocmds, lazy bootstrap
-    └── plugins/           one file per concern (ui, lsp, git, tuis, …)
+config/
+├── mise/tools.txt         the tool manifest — ONE list install.sh & prune.sh read
+└── nvim/                  the Neovim config (installed to ~/.config/nvim)
+    ├── init.lua           entry point
+    ├── lazy-lock.json     pinned plugin versions (reproducible installs)
+    └── lua/
+        ├── config/        options, keymaps, autocmds, lazy bootstrap, user.lua
+        └── plugins/       one file per concern (ui, lsp, git, motion, tuis, …)
 ```
 
-The repo's `config/nvim/` is the single source of truth — the installer copies
-it into `~/.config/nvim`. Edit there and re-run with `--backup` to update.
+`config/nvim/` is the single source of truth — the installer copies it into
+`~/.config/nvim`. `config/mise/tools.txt` is the single source for which tools
+get installed; both scripts read it, so they can't drift apart.
+
+## Reproducibility
+
+- **Tools** are pinned in `config/mise/tools.txt` (Neovim to a major.minor; bump
+  deliberately). Edit a version there and re-run `./install.sh`.
+- **Plugins** are pinned in `config/nvim/lazy-lock.json`. For an exact match to a
+  tested set, run `:Lazy restore` inside Neovim.
+- `./install.sh --check` verifies every expected tool resolves on your `PATH`.
 
 ## Requirements & notes
 

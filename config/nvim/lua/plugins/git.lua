@@ -14,7 +14,9 @@ return {
         m("<leader>gs", gs.stage_hunk, "Stage hunk")
         m("<leader>gr", gs.reset_hunk, "Reset hunk")
         m("<leader>gp", gs.preview_hunk, "Preview hunk")
-        m("<leader>gb", function() gs.blame_line({ full = true }) end, "Blame line")
+        m("<leader>gb", function()
+          gs.blame_line({ full = true })
+        end, "Blame line")
       end,
     },
   },

@@ -12,25 +12,30 @@ fork. Contributions of all sizes are welcome.
 
 ## Before you open a PR
 
-1. **Lint the installer:**
+1. **Lint the shell scripts:**
 
    ```bash
    shellcheck install.sh prune.sh
    bash -n install.sh prune.sh
    ```
 
-   If you add a tool to `install.sh`, mirror it in `prune.sh`'s `CJ_TOOLS`
-   list so uninstall stays complete.
+2. **Format/lint the Lua** (matches CI):
 
-2. **Try a real install** (a container or VM is ideal so you don't clobber your
+   ```bash
+   stylua --check config/nvim
+   luacheck config/nvim --globals vim --no-max-line-length
+   ```
+
+3. **Try a real install** (a container or VM is ideal so you don't clobber your
    own config):
 
    ```bash
    ./install.sh --backup
-   nvim   # then :checkhealth
+   ./install.sh --check   # verify tools resolved on PATH
+   nvim                   # then :checkhealth
    ```
 
-3. If you touched Lua, make sure `nvim` starts cleanly and `:checkhealth`
+4. If you touched Lua, make sure `nvim` starts cleanly and `:checkhealth`
    reports no new errors.
 
 ## Adding a plugin
@@ -40,8 +45,10 @@ It's auto-loaded via the `{ import = "plugins" }` rule — no extra wiring neede
 
 ## Adding a tool (LSP, formatter, TUI)
 
-Add a `mise_use "..."` line in the matching `install_*` function in
-`install.sh`, then wire it into the relevant Lua plugin spec.
+Add the mise spec to the matching section of `config/mise/tools.txt` (the single
+manifest both `install.sh` and `prune.sh` read), then wire it into the relevant
+Lua plugin spec. Add its binary name to the `EXPECTED_BINS` list in `install.sh`
+so `--check` covers it.
 
 ## Commit messages
 

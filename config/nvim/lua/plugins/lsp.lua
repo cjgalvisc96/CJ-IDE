@@ -47,14 +47,20 @@ return {
           local function m(l, fn, d)
             vim.keymap.set("n", l, fn, { buffer = b, desc = d })
           end
-          m("gd", vim.lsp.buf.definition, "Definition")
-          m("gr", vim.lsp.buf.references, "References")
-          m("gi", vim.lsp.buf.implementation, "Implementation")
-          m("K", vim.lsp.buf.hover, "Hover")
+          -- Navigation via fzf-lua pickers: a searchable floating list instead
+          -- of dumping results into the quickfix window.
+          --
+          -- We deliberately do NOT map bare `gr`. Neovim 0.11+ ships default LSP
+          -- maps on the `gr` prefix (grn rename, gra code action, gri impl), so
+          -- a complete `gr` map would shadow all of them. Instead we override the
+          -- prefix leaves we want with nicer pickers and leave the rest as-is.
+          -- K (hover) and [d / ]d (diagnostics) are Neovim defaults already.
+          m("gd", "<cmd>FzfLua lsp_definitions<cr>", "Definition")
+          m("grr", "<cmd>FzfLua lsp_references<cr>", "References")
+          m("gri", "<cmd>FzfLua lsp_implementations<cr>", "Implementation")
+          m("gy", "<cmd>FzfLua lsp_typedefs<cr>", "Type definition")
           m("<leader>cr", vim.lsp.buf.rename, "Rename")
           m("<leader>ca", vim.lsp.buf.code_action, "Code action")
-          m("[d", function() vim.diagnostic.jump({ count = -1 }) end, "Prev diagnostic")
-          m("]d", function() vim.diagnostic.jump({ count = 1 }) end, "Next diagnostic")
         end,
       })
     end,

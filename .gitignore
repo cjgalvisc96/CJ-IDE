@@ -5,7 +5,6 @@
 .DS_Store
 
 # Neovim runtime state that should never be committed
-config/nvim/lazy-lock.json
 config/nvim/.luarc.json
 
 # Local scratch

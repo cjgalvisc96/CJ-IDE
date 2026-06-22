@@ -1,0 +1,43 @@
+# CJ-IDE tool manifest — the SINGLE SOURCE OF TRUTH for what mise installs.
+#
+# Both install.sh and prune.sh read this file, so there is exactly one list to
+# maintain. Format:
+#   * one `mise` tool spec per line  (e.g. node@lts, go:host/pkg@latest)
+#   * blank lines and lines starting with `#` are ignored
+#   * `# [section]` headers group tools; install.sh installs runtimes first
+#     (so the go:/npm: backends below can build) and treats [tuis] as optional
+#     (skipped with --no-tuis)
+#
+# Pin a version for reproducibility by replacing @latest, e.g. `ripgrep@14.1.0`.
+# Neovim is pinned to a major.minor on purpose: an unpinned jump to a new
+# Neovim release is what broke treesitter once already.
+
+# [runtimes]
+node@lts
+go@latest
+python@latest
+neovim@0.12
+
+# [cli]
+ripgrep@latest
+fd@latest
+fzf@latest
+tree-sitter@latest
+
+# [lsp]
+ruff@latest
+lua-language-server@latest
+go:golang.org/x/tools/gopls@latest
+go:mvdan.cc/gofumpt@latest
+go:golang.org/x/tools/cmd/goimports@latest
+npm:basedpyright@latest
+npm:yaml-language-server@latest
+npm:vscode-langservers-extracted@latest
+npm:prettier@latest
+
+# [tuis]
+lazygit@latest
+lazydocker@latest
+k9s@latest
+go:github.com/jorgerojas26/lazysql@latest
+go:github.com/Lifailon/lazyjournal@latest

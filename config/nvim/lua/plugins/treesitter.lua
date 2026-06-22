@@ -13,8 +13,19 @@ return {
       -- jsonc is intentionally absent: it has no parser of its own and maps to
       -- the json parser automatically (vim.treesitter.language.get_lang).
       local langs = {
-        "python", "go", "gomod", "gosum", "yaml", "json", "lua",
-        "bash", "markdown", "markdown_inline", "dockerfile", "vim", "vimdoc",
+        "python",
+        "go",
+        "gomod",
+        "gosum",
+        "yaml",
+        "json",
+        "lua",
+        "bash",
+        "markdown",
+        "markdown_inline",
+        "dockerfile",
+        "vim",
+        "vimdoc",
       }
       -- Installs missing parsers in the background (no-op once present).
       require("nvim-treesitter").install(langs)
@@ -26,7 +37,9 @@ return {
         callback = function(ev)
           local buf = ev.buf
           local lang = vim.treesitter.language.get_lang(vim.bo[buf].filetype)
-          if not lang then return end
+          if not lang then
+            return
+          end
           if pcall(vim.treesitter.start, buf, lang) then
             vim.bo[buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
           end

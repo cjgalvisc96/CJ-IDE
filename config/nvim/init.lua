@@ -15,3 +15,7 @@ require("config.options")
 require("config.keymaps")
 require("config.autocmds")
 require("config.lazy")
+
+-- Keybindings tuned to match a VSCode/VSCodeVim workflow. Loaded last so it
+-- overrides the defaults above. Edit lua/config/user.lua to change them.
+pcall(require, "config.user")

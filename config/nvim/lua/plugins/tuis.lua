@@ -21,7 +21,9 @@ return {
               direction = "float",
               float_opts = { border = "curved" },
               hidden = true,
-              on_open = function() vim.cmd("startinsert!") end,
+              on_open = function()
+                vim.cmd("startinsert!")
+              end,
             })
           cache[cmd]:toggle()
         end

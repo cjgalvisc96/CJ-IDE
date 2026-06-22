@@ -30,6 +30,7 @@ DO_TOOLS=0
 DO_MISE=0
 DRY_RUN=0
 ASSUME_YES=0
+REPO_URL="${CJ_IDE_REPO_URL:-https://github.com/cjgalvisc96/CJ-IDE.git}"
 
 usage() {
   cat <<'EOF'
@@ -91,23 +92,25 @@ find_mise() {
   fi
 }
 
-# Tools CJ-IDE installs (must mirror install.sh). Versions are stripped before
-# `mise unuse` since unuse matches on the tool name.
-CJ_TOOLS=(
-  "node" "go" "python" "neovim"
-  "ripgrep" "fd" "fzf" "tree-sitter"
-  "ruff" "lua-language-server"
-  "go:golang.org/x/tools/gopls"
-  "go:mvdan.cc/gofumpt"
-  "go:golang.org/x/tools/cmd/goimports"
-  "npm:basedpyright"
-  "npm:yaml-language-server"
-  "npm:vscode-langservers-extracted"
-  "npm:prettier"
-  "lazygit" "lazydocker" "k9s"
-  "go:github.com/jorgerojas26/lazysql"
-  "go:github.com/Lifailon/lazyjournal"
-)
+# --- locate the tool manifest (the same one install.sh reads) -------------- #
+# The list of tools lives ONLY in config/mise/tools.txt, so install and prune
+# can never drift apart. Clone the repo if we were piped from the web.
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" 2>/dev/null && pwd -P)" || SCRIPT_DIR=""
+CLONE_TMP=""
+cleanup_clone() { [ -n "$CLONE_TMP" ] && rm -rf "$CLONE_TMP"; return 0; }
+trap cleanup_clone EXIT
+
+manifest_path() {
+  if [ -n "$SCRIPT_DIR" ] && [ -f "$SCRIPT_DIR/config/mise/tools.txt" ]; then
+    printf '%s\n' "$SCRIPT_DIR/config/mise/tools.txt"; return 0
+  fi
+  CLONE_TMP="$(mktemp -d)"
+  if git clone --depth 1 "$REPO_URL" "$CLONE_TMP" >/dev/null 2>&1 \
+     && [ -f "$CLONE_TMP/config/mise/tools.txt" ]; then
+    printf '%s\n' "$CLONE_TMP/config/mise/tools.txt"; return 0
+  fi
+  return 1
+}
 
 # --- remove the Neovim config + runtime data ------------------------------- #
 remove_nvim() {
@@ -169,12 +172,18 @@ remove_rc_block() {
 remove_tools() {
   find_mise
   if [ -z "$MISE_BIN" ]; then warn "mise not found — skipping --tools"; return; fi
+  local manifest
+  if ! manifest="$(manifest_path)"; then
+    err "Could not read tool manifest (config/mise/tools.txt) — skipping --tools"
+    return
+  fi
   info "Unregistering CJ-IDE tools from mise global config..."
-  local t
-  for t in "${CJ_TOOLS[@]}"; do
-    if run "$MISE_BIN" unuse -g "$t" >/dev/null 2>&1; then ok "unuse $t"
-    else warn "could not unuse $t (maybe already gone)"; fi
-  done
+  local spec name
+  while IFS= read -r spec; do
+    name="${spec%@*}" # strip @version: `mise unuse` matches on the tool name
+    if run "$MISE_BIN" unuse -g "$name" >/dev/null 2>&1; then ok "unuse $name"
+    else warn "could not unuse $name (maybe already gone)"; fi
+  done < <(grep -vE '^[[:space:]]*(#|$)' "$manifest")
   info "Pruning unused tool versions..."
   run "$MISE_BIN" prune -y >/dev/null 2>&1 || warn "mise prune reported an issue"
   ok "Tools removed"

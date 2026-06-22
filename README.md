@@ -81,7 +81,7 @@ Markdown.
 - **tokyonight** theme + **lualine** statusline + **which-key** hints
 - **nvim-treesitter** — syntax-aware highlighting & indentation
 - **fzf-lua** — fuzzy finder (files, grep, symbols, diagnostics)
-- **oil.nvim** — edit your filesystem like a buffer
+- **neo-tree** — file tree as a side panel docked on the right
 - **gitsigns** — hunk signs, staging, blame
 - **blink.cmp** — completion + signature help, fed by **schemastore** for JSON/YAML
 - **nvim-lspconfig** — native LSP (`lua_ls`, `basedpyright`, `ruff`, `gopls`, `yamlls`, `jsonls`)
@@ -99,7 +99,7 @@ Leader is **Space**.
 |------|--------|
 | `<leader>ff` / `fg` / `fb` | Find files / live grep / buffers |
 | `<leader>fs` / `fd` / `fh` / `fr` | Symbols / diagnostics / help / resume |
-| `<leader>e` | File explorer (oil) |
+| `<leader>e` | File tree (neo-tree, right panel) |
 | `gd` / `gr` / `gi` / `K` | Definition / references / implementation / hover |
 | `<leader>cr` / `ca` / `cf` | Rename / code action / format |
 | `[d` / `]d` | Prev / next diagnostic |
@@ -130,6 +130,8 @@ it into `~/.config/nvim`. Edit there and re-run with `--backup` to update.
 - The installer pulls minimal build tools (git, curl, a C compiler) from your OS
   package manager; everything else comes from mise.
 - Make sure `KUBECONFIG` is set so k9s works.
+- For file-tree icons to render, use a [Nerd Font](https://www.nerdfonts.com)
+  in your terminal (otherwise neo-tree's icons show as missing glyphs).
 
 ## Contributing
 

@@ -1,6 +1,4 @@
--- File explorers.
---   neo-tree  : a classic tree as a side panel (docked on the RIGHT)  -> <leader>e
---   oil       : edit a directory like a normal buffer (great for bulk ops) -> <leader>o / -
+-- File explorer: neo-tree as a side panel docked on the RIGHT.
 --
 -- neo-tree uses nvim-web-devicons for file icons + tree glyphs, so a Nerd Font
 -- (https://www.nerdfonts.com) in your terminal makes it look right.
@@ -33,17 +31,6 @@ return {
           hide_gitignored = true,
         },
       },
-    },
-  },
-
-  {
-    "stevearc/oil.nvim",
-    dependencies = { "nvim-tree/nvim-web-devicons" },
-    lazy = false,
-    opts = {},
-    keys = {
-      { "<leader>o", "<cmd>Oil<cr>", desc = "Explorer (oil buffer)" },
-      { "-", "<cmd>Oil<cr>", desc = "Open parent dir (oil)" },
     },
   },
 }

@@ -31,7 +31,6 @@ return {
       map("n", "<leader>Tg", tui("lazygit"), { desc = "Lazygit" })
       map("n", "<leader>Td", tui("lazydocker"), { desc = "Lazydocker" })
       map("n", "<leader>Tq", tui("lazysql"), { desc = "LazySQL" })
-      map("n", "<leader>Th", tui("lazyssh"), { desc = "LazySSH" })
       map("n", "<leader>Tk", tui("k9s"), { desc = "k9s" })
       map("n", "<leader>Tj", tui("lazyjournal"), { desc = "lazyjournal" })
     end,

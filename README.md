@@ -49,8 +49,7 @@ Then:
 | `./install.sh --no-tuis` | Skip the TUI tools |
 | `./install.sh --help` | Show usage |
 
-Environment overrides: `CJ_IDE_REPO_URL` (config source for `curl | bash`),
-`LAZYSSH_GO_PKG` (lazyssh module path).
+Environment override: `CJ_IDE_REPO_URL` (config source for `curl | bash`).
 
 ## Uninstall
 
@@ -89,7 +88,7 @@ Markdown.
 - **conform.nvim** — format-on-save (`ruff`, `gofumpt`/`goimports`, `prettier`)
 - **toggleterm** — TUIs in floating terminals
 
-**TUIs** (mapped under `<leader>T`): lazygit, lazydocker, lazysql, lazyssh, k9s,
+**TUIs** (mapped under `<leader>T`): lazygit, lazydocker, lazysql, k9s,
 lazyjournal.
 
 ## Keybindings
@@ -108,7 +107,7 @@ Leader is **Space**.
 | `<leader>gs` / `gr` / `gp` / `gb` | Stage / reset / preview hunk, blame line |
 | `<leader>w` | Save |
 | `<C-\>` | Toggle floating terminal |
-| `<leader>Tg Td Tq Th Tk Tj` | lazygit, lazydocker, lazysql, lazyssh, k9s, lazyjournal |
+| `<leader>Tg Td Tq Tk Tj` | lazygit, lazydocker, lazysql, k9s, lazyjournal |
 | `<C-x>` (terminal) | Back to normal mode |
 
 ## Project layout
@@ -130,9 +129,7 @@ it into `~/.config/nvim`. Edit there and re-run with `--backup` to update.
 
 - The installer pulls minimal build tools (git, curl, a C compiler) from your OS
   package manager; everything else comes from mise.
-- Make sure `KUBECONFIG` and `~/.ssh` are set so k9s and lazyssh work.
-- `lazyssh` has several implementations; if it fails, set the module and rerun:
-  `LAZYSSH_GO_PKG=github.com/you/yourssh@latest ./install.sh --no-tuis`.
+- Make sure `KUBECONFIG` is set so k9s works.
 
 ## Contributing
 

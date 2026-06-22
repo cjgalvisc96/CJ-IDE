@@ -4,7 +4,7 @@
 #
 # Uses mise (https://mise.jdx.dev) to install almost everything GLOBALLY:
 #   Neovim, Node/Go/Python, ripgrep/fd/fzf, the TUIs (lazygit, lazydocker,
-#   lazysql, lazyssh, k9s, lazyjournal), and all LSP servers/formatters.
+#   lazysql, k9s, lazyjournal), and all LSP servers/formatters.
 # Only build tools (git/curl/compiler) come from the OS package manager.
 # Then it installs the Neovim config from this repo's config/nvim/ into
 # ~/.config/nvim (cloning the repo first if you ran it via `curl | bash`).
@@ -20,7 +20,6 @@ set -euo pipefail
 REPO_URL="${CJ_IDE_REPO_URL:-https://github.com/cjgalvisc96/CJ-IDE.git}"
 DO_BACKUP=0
 DO_TUIS=1
-LAZYSSH_GO_PKG="${LAZYSSH_GO_PKG:-github.com/Adembc/lazyssh@latest}"  # override if needed
 
 usage() {
   cat <<'EOF'
@@ -34,7 +33,6 @@ Usage:
 
 Environment overrides:
   CJ_IDE_REPO_URL   git URL to clone config from when run via curl | bash
-  LAZYSSH_GO_PKG    Go module path for lazyssh
 EOF
 }
 
@@ -159,7 +157,6 @@ install_tuis() {
   mise_use "k9s@latest"
   mise_use "go:github.com/jorgerojas26/lazysql@latest"
   mise_use "go:github.com/Lifailon/lazyjournal@latest"
-  mise_use "go:${LAZYSSH_GO_PKG}"
   "$MISE_BIN" reshim >/dev/null 2>&1 || true
 }
 
@@ -253,13 +250,11 @@ Done. Next:
 Keys:  <leader> is Space.
   <leader>f*  find (files/grep/buffers/symbols/diagnostics)   <leader>e  explorer
   <leader>g*  git hunks/blame      <leader>c{a,r,f}  code action/rename/format
-  <leader>T*  TUIs -> Tg lazygit  Td lazydocker  Tq lazysql  Th lazyssh
+  <leader>T*  TUIs -> Tg lazygit  Td lazydocker  Tq lazysql
               Tk k9s  Tj lazyjournal
 
 Notes:
-  * Make sure KUBECONFIG / ~/.ssh are set in your shell so k9s and lazyssh work.
-  * lazyssh has several implementations; if it failed, set the module and rerun:
-      LAZYSSH_GO_PKG=github.com/you/yourssh@latest ./install.sh --no-tuis
+  * Make sure KUBECONFIG is set in your shell so k9s works.
 EOF
 }
 

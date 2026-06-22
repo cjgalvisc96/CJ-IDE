@@ -100,18 +100,16 @@ map("n", "<leader>t", "<cmd>ToggleTerm<cr>", { desc = "New terminal" })
 map("n", "J", "}", { desc = "Next paragraph" })
 map("n", "K", "{", { desc = "Previous paragraph" })
 
--- folding on f / F (f, fa, fu coexist via timeoutlen). pcall hides "no fold".
-local function fold(keys)
-  return function()
-    pcall(function()
-      vim.cmd("normal! " .. keys)
-    end)
-  end
-end
-map("n", "f", fold("zC"), { desc = "Fold recursively" })
-map("n", "F", fold("zO"), { desc = "Unfold recursively" })
-map("n", "fa", fold("zM"), { desc = "Fold all" })
-map("n", "fu", fold("zR"), { desc = "Unfold all" })
+-- folding: f toggles the fold under the cursor, F toggles every fold.
+-- Single instant keys (no fa/fu prefix), so `f` never waits on timeoutlen.
+map("n", "f", function()
+  pcall(vim.cmd, "normal! za")
+end, { desc = "Toggle fold" })
+local all_folds_closed = false
+map("n", "F", function()
+  all_folds_closed = not all_folds_closed
+  vim.cmd("normal! " .. (all_folds_closed and "zM" or "zR"))
+end, { desc = "Toggle all folds" })
 
 -- copy the whole file to the system clipboard
 map("n", "vv", "<cmd>%yank +<cr>", { desc = "Copy whole file" })

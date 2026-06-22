@@ -82,7 +82,6 @@ Markdown.
 - **nvim-treesitter** — syntax-aware highlighting & indentation
 - **fzf-lua** — fuzzy finder (files, grep, symbols, diagnostics) + LSP nav
 - **neo-tree** — file tree as a side panel docked on the right
-- **gitsigns** — hunk signs, staging, blame
 - **blink.cmp** — completion + signature help, fed by **schemastore** for JSON/YAML
 - **nvim-lspconfig** — native LSP (`lua_ls`, `basedpyright`, `ruff`, `gopls`, `yamlls`, `jsonls`)
 - **toggleterm** — TUIs in floating terminals
@@ -105,8 +104,6 @@ Leader is **Space**.
 | `<leader>cd` | Line diagnostics (float) |
 | `<leader>cr` / `ca` | Rename / code action |
 | `[d` / `]d` | Prev / next diagnostic |
-| `]c` / `[c` | Next / prev git hunk |
-| `<leader>gs` / `gr` / `gp` / `gb` | Stage / reset / preview hunk, blame line |
 | `<leader>w` | Save |
 | `<C-\>` | Toggle floating terminal |
 | `<leader>lg ld ls lk lj` | lazygit, lazydocker, lazysql, k9s, lazyjournal |
@@ -128,7 +125,7 @@ CJ-IDE ships a **VSCode/VSCodeVim-flavored** keymap in `lua/config/user.lua`
 | `<leader>t` | New terminal |
 | `<leader>m` | Toggle comment (normal + visual) |
 | `<leader>j` / `<leader>k` | Move line/selection down / up |
-| `f` `F` `fa` `fu` | Fold / unfold (recursive / all) |
+| `f` / `F` | Toggle fold under cursor / toggle all folds |
 | `J` / `K` | Next / previous paragraph |
 
 > These intentionally remap some core Vim keys (`f`, `J`, `K`, `dw`/`df`/`yf`…)

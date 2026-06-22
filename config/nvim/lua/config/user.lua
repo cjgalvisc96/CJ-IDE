@@ -18,8 +18,60 @@ vim.opt.foldexpr = "v:lua.vim.treesitter.foldexpr()"
 vim.opt.foldtext = ""
 vim.opt.foldlevel = 99 -- open everything by default
 
+-- Autosave, like VSCode "files.autoSave": "afterDelay" with a 1000ms delay:
+-- write the file ~1s after you stop changing it (debounced; insert mode too).
+do
+  local delay = 1000
+  local timer = (vim.uv or vim.loop).new_timer()
+  vim.api.nvim_create_autocmd({ "TextChanged", "TextChangedI", "InsertLeave" }, {
+    desc = "Autosave after delay",
+    callback = function(ev)
+      local buf = ev.buf
+      timer:stop()
+      timer:start(
+        delay,
+        0,
+        vim.schedule_wrap(function()
+          if not vim.api.nvim_buf_is_valid(buf) then
+            return
+          end
+          local bo = vim.bo[buf]
+          -- only real, writable, on-disk files (skip terminals/trees/unnamed)
+          if
+            bo.modified
+            and bo.modifiable
+            and not bo.readonly
+            and bo.buftype == ""
+            and vim.api.nvim_buf_get_name(buf) ~= ""
+          then
+            vim.api.nvim_buf_call(buf, function()
+              vim.cmd("silent! write")
+            end)
+          end
+        end)
+      )
+    end,
+  })
+end
+
 -- ── files / search / buffers ──────────────────────────────────────────────
 map("n", "<leader>q", "<cmd>bdelete<cr>", { desc = "Close editor" })
+-- Smart close: a floating panel (lazygit/lazydocker/…), the tree, a split, or
+-- finally the buffer — whichever you're focused on.
+map("n", "<leader>x", function()
+  local win = vim.api.nvim_get_current_win()
+  if vim.api.nvim_win_get_config(win).relative ~= "" then
+    vim.api.nvim_win_close(win, true) -- floating TUI panel
+  elseif vim.bo.filetype == "neo-tree" then
+    vim.cmd("Neotree close")
+  elseif #vim.api.nvim_tabpage_list_wins(0) > 1 then
+    vim.cmd("close") -- a split
+  else
+    vim.cmd("bdelete") -- last window: drop the buffer
+  end
+end, { desc = "Close panel / split / buffer" })
+-- Quit the whole IDE (warns if anything is unsaved; use :qa! to force).
+map("n", "<leader>Q", "<cmd>qa<cr>", { desc = "Quit CJ-IDE" })
 map("n", "<leader>b", "<cmd>FzfLua buffers<cr>", { desc = "Switch buffer" })
 map("n", "<leader>f", "<cmd>FzfLua lgrep_curbuf<cr>", { desc = "Search in current file" })
 map("n", "<leader>F", "<cmd>FzfLua live_grep<cr>", { desc = "Search in project" })

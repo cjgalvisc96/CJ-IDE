@@ -38,7 +38,7 @@ Then:
 1. Restart your shell (or `exec $SHELL`) so `mise` and its tools are on `PATH`.
 2. Run `nvim`. Plugins install on first launch — let it finish.
 3. Inside Neovim, run `:checkhealth` and open a `.py`/`.go`/`.yaml`/`.json`
-   file to confirm the LSP attaches and format-on-save works.
+   file to confirm the LSP attaches.
 
 ### Install options
 
@@ -85,7 +85,6 @@ Markdown.
 - **gitsigns** — hunk signs, staging, blame
 - **blink.cmp** — completion + signature help, fed by **schemastore** for JSON/YAML
 - **nvim-lspconfig** — native LSP (`lua_ls`, `basedpyright`, `ruff`, `gopls`, `yamlls`, `jsonls`)
-- **conform.nvim** — format-on-save (`ruff`, `gofumpt`/`goimports`, `prettier`), toggle with `:FormatToggle`
 - **toggleterm** — TUIs in floating terminals
 
 **TUIs** (mapped under `<leader>l`): lazygit, lazydocker, lazysql, k9s,
@@ -104,7 +103,7 @@ Leader is **Space**.
 | `gb` | Jump back (e.g. after `gd`) |
 | `gh` | Hover docs |
 | `<leader>cd` | Line diagnostics (float) |
-| `<leader>cr` / `ca` / `cf` | Rename / code action / format |
+| `<leader>cr` / `ca` | Rename / code action |
 | `[d` / `]d` | Prev / next diagnostic |
 | `]c` / `[c` | Next / prev git hunk |
 | `<leader>gs` / `gr` / `gp` / `gb` | Stage / reset / preview hunk, blame line |
@@ -122,7 +121,8 @@ CJ-IDE ships a **VSCode/VSCodeVim-flavored** keymap in `lua/config/user.lua`
 |------|--------|
 | `<leader>p` / `<leader>f` | Quick-open file / find in files |
 | `<leader>b` | Switch buffer (fuzzy) |
-| `<leader>q` | Close editor |
+| `<leader>q` / `<leader>x` | Close buffer / smart-close panel·split·buffer |
+| `<leader>Q` | Quit CJ-IDE |
 | `<C-n>` / `<C-s>` | New file / split editor (vertical) |
 | `<C-h>` / `<C-l>` | Focus split left / right |
 | `<leader>t` | New terminal |
@@ -134,6 +134,9 @@ CJ-IDE ships a **VSCode/VSCodeVim-flavored** keymap in `lua/config/user.lua`
 > These intentionally remap some core Vim keys (`f`, `J`, `K`, `dw`/`df`/`yf`…)
 > to match VSCode muscle memory. Edit `lua/config/user.lua` to change or remove
 > any of them — it's the one file meant for personal taste.
+
+**Autosave:** files write themselves ~1s after you stop changing them (like
+VSCode `files.autoSave: afterDelay`). Configured in `lua/config/user.lua`.
 
 ## Project layout
 

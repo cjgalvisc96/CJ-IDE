@@ -119,14 +119,13 @@ CJ-IDE ships a **VSCode/VSCodeVim-flavored** keymap in `lua/config/user.lua`
 | Keys | Action |
 |------|--------|
 | `<leader>p` / `<leader>a` | Quick-open file / find in files |
-| `<leader>q` / `<leader>t` | Close / new editor |
+| `<leader>q` / `<leader>n` | Close editor / new file |
+| `<leader>t` | New terminal |
 | `<leader>s` | Split editor (vertical) |
 | `<leader>l` / `<leader>h` | Focus split right / left |
 | `<leader>b` | Switch buffer (fuzzy) |
 | `<leader>m` | Toggle comment (normal + visual) |
 | `<leader>j` / `<leader>k` | Move line/selection down / up |
-| `<C-b>` / `<C-t>` | Toggle sidebar / new terminal |
-| `<C-h>` `<C-l>` · `<C-Left>` `<C-Right>` | Focus / resize windows |
 | `f` `F` `fa` `fu` | Fold / unfold (recursive / all) |
 | `J` / `K` | Next / previous paragraph |
 

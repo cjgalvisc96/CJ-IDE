@@ -23,16 +23,14 @@ map("n", "<leader>q", "<cmd>bdelete<cr>", { desc = "Close editor" })
 map("n", "<leader>b", "<cmd>FzfLua buffers<cr>", { desc = "Switch buffer" })
 map("n", "<leader>a", "<cmd>FzfLua live_grep<cr>", { desc = "Find in files" })
 map("n", "<leader>p", "<cmd>FzfLua files<cr>", { desc = "Quick open file" })
-map("n", "<leader>t", "<cmd>enew<cr>", { desc = "New file" })
+map("n", "<leader>n", "<cmd>enew<cr>", { desc = "New file" })
 map("n", "<leader>l", "<C-w>l", { desc = "Focus split on the right" })
 map("n", "<leader>h", "<C-w>h", { desc = "Focus split on the left" })
 map("n", "<leader>s", "<cmd>vsplit<cr>", { desc = "Split editor (vertical)" })
 
 -- comments (built-in gc; remap=true so the gcc/gc operator runs)
 map("n", "<leader>m", "gcc", { remap = true, desc = "Comment line" })
-map("n", "<leader>M", "gcc", { remap = true, desc = "Uncomment line" })
 map("x", "<leader>m", "gc", { remap = true, desc = "Comment" })
-map("x", "<leader>M", "gc", { remap = true, desc = "Uncomment" })
 
 -- move lines up / down
 map("n", "<leader>j", "<cmd>m .+1<cr>==", { desc = "Move line down" })
@@ -40,21 +38,8 @@ map("n", "<leader>k", "<cmd>m .-2<cr>==", { desc = "Move line up" })
 map("x", "<leader>j", ":m '>+1<cr>gv=gv", { desc = "Move selection down" })
 map("x", "<leader>k", ":m '<-2<cr>gv=gv", { desc = "Move selection up" })
 
--- ── windows / panels / nav ────────────────────────────────────────────────
-map("n", "<C-b>", "<cmd>Neotree toggle<cr>", { desc = "Toggle sidebar" })
-map("n", "<C-t>", "<cmd>ToggleTerm<cr>", { desc = "New terminal" })
-map("n", "<C-h>", "<C-w>h", { desc = "Focus left window" })
-map("n", "<C-l>", "<C-w>l", { desc = "Focus right window" })
-map("n", "<C-Left>", "<cmd>vertical resize -2<cr>", { desc = "Shrink window" })
-map("n", "<C-Right>", "<cmd>vertical resize +2<cr>", { desc = "Grow window" })
-map("n", "<C-j>", "<C-e>", { desc = "Scroll down a line" })
-map("n", "<C-k>", "<C-y>", { desc = "Scroll up a line" })
-map("n", "gj", "<C-o>", { desc = "Navigate back" })
-map("n", "gk", "<C-i>", { desc = "Navigate forward" })
-
--- keep selection when indenting
-map("x", ">", ">gv", { desc = "Indent and reselect" })
-map("x", "<", "<gv", { desc = "Outdent and reselect" })
+-- ── terminal ──────────────────────────────────────────────────────────────
+map("n", "<leader>t", "<cmd>ToggleTerm<cr>", { desc = "New terminal" })
 
 -- ── core-motion overrides (match VSCode; remove to restore stock Vim) ──────
 
@@ -77,6 +62,9 @@ map("n", "fu", fold("zR"), { desc = "Unfold all" })
 
 -- select to end of line
 map("n", "vf", "v$", { desc = "Select to line end" })
+
+-- copy the whole file to the system clipboard
+map("n", "vv", "<cmd>%yank +<cr>", { desc = "Copy whole file" })
 
 -- operator shortcuts: change/yank word/line/block in one step
 map("n", "dw", "dwi", { desc = "Delete word -> insert" })

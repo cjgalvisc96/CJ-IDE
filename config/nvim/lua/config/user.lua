@@ -100,22 +100,20 @@ map("n", "<leader>t", "<cmd>ToggleTerm<cr>", { desc = "New terminal" })
 map("n", "J", "}", { desc = "Next paragraph" })
 map("n", "K", "{", { desc = "Previous paragraph" })
 
--- folding: f toggles the fold under the cursor; if the cursor isn't inside any
--- block (e.g. a top-level import line) it folds/unfolds EVERYTHING instead, so
--- `f` always does something. F always toggles every fold. Both are instant.
-local all_folds_closed = false
-local function toggle_all_folds()
-  all_folds_closed = not all_folds_closed
-  vim.cmd("normal! " .. (all_folds_closed and "zM" or "zR"))
-end
-map("n", "f", function()
-  if vim.fn.foldlevel(".") > 0 then
-    pcall(vim.cmd, "normal! za") -- toggle the fold at the cursor
-  else
-    toggle_all_folds() -- not in a block: fold/unfold everything
+-- folding: f fold / F unfold (recursively under cursor), fa fold all / fu unfold
+-- all. (`f` waits briefly for a/u — that's the fa/fu prefix; raise/lower with
+-- timeoutlen above.) pcall hides the harmless "no fold here" error.
+local function fold(keys)
+  return function()
+    pcall(function()
+      vim.cmd("normal! " .. keys)
+    end)
   end
-end, { desc = "Toggle fold (or all if not in a block)" })
-map("n", "F", toggle_all_folds, { desc = "Toggle all folds" })
+end
+map("n", "f", fold("zC"), { desc = "Fold recursively" })
+map("n", "F", fold("zO"), { desc = "Unfold recursively" })
+map("n", "fa", fold("zM"), { desc = "Fold all" })
+map("n", "fu", fold("zR"), { desc = "Unfold all" })
 
 -- copy the whole file to the system clipboard
 map("n", "vv", "<cmd>%yank +<cr>", { desc = "Copy whole file" })

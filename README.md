@@ -125,8 +125,7 @@ CJ-IDE ships a **VSCode/VSCodeVim-flavored** keymap in `lua/config/user.lua`
 | `<leader>t` | New terminal |
 | `<leader>m` | Toggle comment (normal + visual) |
 | `<leader>j` / `<leader>k` | Move line/selection down / up |
-| `f` | Toggle fold at cursor (or all folds if not in a block) |
-| `F` | Toggle all folds |
+| `f` `F` `fa` `fu` | Fold / unfold (recursive / all) |
 | `J` / `K` | Next / previous paragraph |
 
 > These intentionally remap some core Vim keys (`f`, `J`, `K`, `dw`/`df`/`yf`…)

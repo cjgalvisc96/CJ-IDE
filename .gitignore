@@ -1,0 +1,14 @@
+# Editor / OS cruft
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Neovim runtime state that should never be committed
+config/nvim/lazy-lock.json
+config/nvim/.luarc.json
+
+# Local scratch
+*.log
+*.bak
+*.bak.*

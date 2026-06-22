@@ -1,20 +1,15 @@
 #!/usr/bin/env bash
 #
-# install.sh — one-shot setup for a custom Neovim IDE.
+# install.sh — one-shot setup for CJ-IDE, a custom Neovim IDE.
 #
 # Uses mise (https://mise.jdx.dev) to install almost everything GLOBALLY:
 #   Neovim, Node/Go/Python, ripgrep/fd/fzf, the TUIs (lazygit, lazydocker,
 #   lazysql, lazyssh, k9s, lazyjournal, claws), and all LSP servers/formatters.
 # Only build tools (git/curl/compiler) come from the OS package manager.
-# Then it writes a ready-to-use ~/.config/nvim/init.lua.
+# Then it installs the Neovim config from this repo's config/nvim/ into
+# ~/.config/nvim (cloning the repo first if you ran it via `curl | bash`).
 #
-# Works on: Debian/Ubuntu, Fedora, Arch, RHEL/Rocky/Alma, macOS.
-#
-# Usage:
-#   ./install.sh            install everything + write config
-#   ./install.sh --backup   move an existing ~/.config/nvim aside first
-#   ./install.sh --no-tuis  skip the TUI tools
-#   ./install.sh --help
+# Works on: Debian/Ubuntu, Fedora, Arch, RHEL/Rocky/Alma, openSUSE, macOS.
 #
 # Idempotent: re-running skips what's already installed. After it finishes,
 # restart your shell and run `nvim`.
@@ -22,20 +17,40 @@
 set -euo pipefail
 
 # --------------------------------------------------------------------------- #
+REPO_URL="${CJ_IDE_REPO_URL:-https://github.com/cjgalvisc96/CJ-IDE.git}"
 DO_BACKUP=0
 DO_TUIS=1
 LAZYSSH_GO_PKG="${LAZYSSH_GO_PKG:-github.com/Adembc/lazyssh@latest}"  # override if needed
+
+usage() {
+  cat <<'EOF'
+install.sh — one-shot setup for CJ-IDE, a custom Neovim IDE.
+
+Usage:
+  ./install.sh            install everything + write config
+  ./install.sh --backup   move an existing ~/.config/nvim aside first
+  ./install.sh --no-tuis  skip the TUI tools
+  ./install.sh --help
+
+Environment overrides:
+  CJ_IDE_REPO_URL   git URL to clone config from when run via curl | bash
+  LAZYSSH_GO_PKG    Go module path for lazyssh
+EOF
+}
 
 for arg in "$@"; do
   case "$arg" in
     --backup)  DO_BACKUP=1 ;;
     --no-tuis) DO_TUIS=0 ;;
-    -h|--help) sed -n '2,28p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
-    *) echo "Unknown flag: $arg (try --help)"; exit 1 ;;
+    -h|--help) usage; exit 0 ;;
+    *) echo "Unknown flag: $arg (try --help)" >&2; exit 1 ;;
   esac
 done
 
 INSTALLED=(); FAILED=()
+
+# Directory this script lives in (empty/unreliable when piped via curl | bash).
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" 2>/dev/null && pwd -P)" || SCRIPT_DIR=""
 
 # --- logging --------------------------------------------------------------- #
 if [ -t 1 ]; then
@@ -44,12 +59,12 @@ else R=""; B=""; G=""; Y=""; E=""; BD=""; fi
 info(){ printf "%s==>%s %s\n" "$B" "$R" "$*"; }
 ok(){   printf "%s ✓ %s %s\n" "$G" "$R" "$*"; }
 warn(){ printf "%s ! %s %s\n" "$Y" "$R" "$*"; }
-err(){  printf "%s ✗ %s %s\n" "$E" "$R" "$*"; }
+err(){  printf "%s ✗ %s %s\n" "$E" "$R" "$*" >&2; }
 hr(){   printf "%s%s%s\n" "$BD" "------------------------------------------------------------" "$R"; }
 
 # --- detect OS / package manager ------------------------------------------- #
 OS="$(uname -s)"; PM=""; SUDO=""
-[ "$(id -u)" -ne 0 ] && command -v sudo >/dev/null 2>&1 && SUDO="sudo"
+if [ "$(id -u)" -ne 0 ] && command -v sudo >/dev/null 2>&1; then SUDO="sudo"; fi
 
 detect_pm() {
   if [ "$OS" = "Darwin" ]; then PM="mac"
@@ -65,7 +80,13 @@ detect_pm() {
 install_build_tools() {
   info "Installing minimal build tools (git, curl, compiler)..."
   case "$PM" in
-    mac)    xcode-select --install 2>/dev/null || true ;;
+    mac)
+      if ! xcode-select -p >/dev/null 2>&1; then
+        xcode-select --install 2>/dev/null || true
+        warn "Command Line Tools install was triggered in a separate window."
+        warn "Finish that GUI install, then re-run this script if compilation fails."
+      fi
+      ;;
     apt)    $SUDO apt-get update -y && $SUDO apt-get install -y git curl build-essential unzip ca-certificates ;;
     dnf)    $SUDO dnf install -y git curl gcc gcc-c++ make unzip ca-certificates ;;
     pacman) $SUDO pacman -Sy --needed --noconfirm git curl base-devel unzip ca-certificates ;;
@@ -86,7 +107,6 @@ install_mise() {
   fi
   ok "mise: $("$MISE_BIN" --version 2>/dev/null || echo present)"
   # Make mise shims usable within this script run.
-  export PATH="$HOME/.local/bin:$("$MISE_BIN" where ripgrep >/dev/null 2>&1; echo "$HOME/.local/share/mise/shims"):$PATH"
   export PATH="$HOME/.local/share/mise/shims:$HOME/.local/bin:$PATH"
 }
 
@@ -132,7 +152,7 @@ install_lsp_and_formatters() {
 }
 
 install_tuis() {
-  [ "$DO_TUIS" -eq 0 ] && { info "Skipping TUIs (--no-tuis)"; return; }
+  if [ "$DO_TUIS" -eq 0 ]; then info "Skipping TUIs (--no-tuis)"; return; fi
   info "Installing TUIs via mise..."
   mise_use "lazygit@latest"
   mise_use "lazydocker@latest"
@@ -148,238 +168,68 @@ install_tuis() {
 ensure_shell_rc() {
   local rc shellname line
   shellname="$(basename "${SHELL:-bash}")"
+  # The activation lines below are written verbatim to the rc file, so they
+  # must stay single-quoted (shell expands them at shell startup, not now).
+  # shellcheck disable=SC2016
   case "$shellname" in
     zsh)  rc="$HOME/.zshrc";  line='eval "$(mise activate zsh)"' ;;
     fish) rc="$HOME/.config/fish/config.fish"; line='mise activate fish | source' ;;
     *)    rc="$HOME/.bashrc"; line='eval "$(mise activate bash)"' ;;
   esac
   mkdir -p "$(dirname "$rc")"; touch "$rc"
-  grep -qF 'mise activate' "$rc" || {
-    printf '\n# Added by Neovim IDE install.sh\nexport PATH="$HOME/.local/bin:$PATH"\n%s\n' "$line" >> "$rc"
+  if ! grep -qF 'mise activate' "$rc"; then
+    # shellcheck disable=SC2016
+    printf '\n# Added by CJ-IDE install.sh\nexport PATH="$HOME/.local/bin:$PATH"\n%s\n' "$line" >> "$rc"
     ok "Enabled mise in $rc (restart your shell)"
-  }
+  fi
 }
 
-# --- write the Neovim config ----------------------------------------------- #
+# --- locate the config/nvim shipped with this repo ------------------------- #
+CLONE_TMP=""
+cleanup() { [ -n "$CLONE_TMP" ] && rm -rf "$CLONE_TMP"; }
+trap cleanup EXIT
+
+config_source() {
+  # Echo a path to a config/nvim directory, cloning the repo if needed.
+  if [ -n "$SCRIPT_DIR" ] && [ -d "$SCRIPT_DIR/config/nvim" ]; then
+    printf '%s\n' "$SCRIPT_DIR/config/nvim"; return
+  fi
+  info "config/nvim not found locally — cloning $REPO_URL ..." >&2
+  CLONE_TMP="$(mktemp -d)"
+  if git clone --depth 1 "$REPO_URL" "$CLONE_TMP" >/dev/null 2>&1 \
+     && [ -d "$CLONE_TMP/config/nvim" ]; then
+    printf '%s\n' "$CLONE_TMP/config/nvim"; return
+  fi
+  err "Could not obtain config/nvim (clone failed or directory missing)."
+  return 1
+}
+
+# --- install the Neovim config --------------------------------------------- #
 write_config() {
-  local cfg="$HOME/.config/nvim"
+  local cfg="$HOME/.config/nvim" src
+  if ! src="$(config_source)"; then
+    FAILED+=("nvim-config"); return
+  fi
+
   if [ -d "$cfg" ] && [ -n "$(ls -A "$cfg" 2>/dev/null)" ]; then
     if [ "$DO_BACKUP" -eq 1 ]; then
-      local dest="$cfg.bak.$(date +%Y%m%d%H%M%S)"; mv "$cfg" "$dest"; ok "Backed up old config -> $dest"
+      local dest; dest="$cfg.bak.$(date +%Y%m%d%H%M%S)"
+      mv "$cfg" "$dest"; ok "Backed up old config -> $dest"
     else
       warn "Existing $cfg found — not overwriting (re-run with --backup to replace). Skipping config."
       return
     fi
   fi
+
   mkdir -p "$cfg"
-  cat > "$cfg/init.lua" <<'LUA'
--- ~/.config/nvim/init.lua  — custom IDE (generated by install.sh)
--- LSP servers, formatters and TUIs are installed globally via mise and
--- found on your PATH. No mason needed.
-
-vim.g.mapleader = " "
-vim.g.maplocalleader = " "
-
-local o = vim.opt
-o.number = true
-o.relativenumber = true
-o.expandtab = true
-o.shiftwidth = 4
-o.tabstop = 4
-o.smartindent = true
-o.ignorecase = true
-o.smartcase = true
-o.splitright = true
-o.splitbelow = true
-o.undofile = true
-o.signcolumn = "yes"
-o.termguicolors = true
-o.cursorline = true
-o.scrolloff = 6
-o.updatetime = 250
-o.clipboard = "unnamedplus"
-o.completeopt = "menu,menuone,noselect"
-
-vim.diagnostic.config({
-  severity_sort = true,
-  virtual_text = { prefix = "●" },
-  float = { border = "rounded", source = "if_many" },
-})
-
--- bootstrap lazy.nvim
-local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
-if not (vim.uv or vim.loop).fs_stat(lazypath) then
-  vim.fn.system({ "git", "clone", "--filter=blob:none",
-    "https://github.com/folke/lazy.nvim.git", "--branch=stable", lazypath })
-end
-vim.opt.rtp:prepend(lazypath)
-
-require("lazy").setup({
-  -- theme
-  { "folke/tokyonight.nvim", priority = 1000,
-    config = function() vim.cmd.colorscheme("tokyonight-night") end },
-
-  -- statusline
-  { "nvim-lualine/lualine.nvim", event = "VeryLazy",
-    opts = { options = { theme = "tokyonight", globalstatus = true } } },
-
-  -- keymap hints
-  { "folke/which-key.nvim", event = "VeryLazy", opts = {} },
-
-  -- treesitter (pin master: classic .configs API)
-  { "nvim-treesitter/nvim-treesitter", branch = "master", build = ":TSUpdate",
-    event = { "BufReadPre", "BufNewFile" },
-    config = function()
-      require("nvim-treesitter.configs").setup({
-        ensure_installed = { "python", "go", "gomod", "gosum", "yaml", "json",
-          "jsonc", "lua", "bash", "markdown", "markdown_inline", "dockerfile",
-          "vim", "vimdoc" },
-        highlight = { enable = true },
-        indent = { enable = true },
-      })
-    end },
-
-  -- fuzzy finder (fzf)
-  { "ibhagwan/fzf-lua", cmd = "FzfLua", opts = {},
-    keys = {
-      { "<leader>ff", "<cmd>FzfLua files<cr>",               desc = "Find files" },
-      { "<leader>fg", "<cmd>FzfLua live_grep<cr>",           desc = "Live grep" },
-      { "<leader>fb", "<cmd>FzfLua buffers<cr>",             desc = "Buffers" },
-      { "<leader>fh", "<cmd>FzfLua helptags<cr>",            desc = "Help" },
-      { "<leader>fr", "<cmd>FzfLua resume<cr>",              desc = "Resume" },
-      { "<leader>fd", "<cmd>FzfLua diagnostics_document<cr>",desc = "Diagnostics" },
-      { "<leader>fs", "<cmd>FzfLua lsp_document_symbols<cr>",desc = "Symbols" },
-    } },
-
-  -- file explorer
-  { "stevearc/oil.nvim", lazy = false, opts = {},
-    keys = { { "<leader>e", "<cmd>Oil<cr>", desc = "Explorer" } } },
-
-  -- git
-  { "lewis6991/gitsigns.nvim", event = { "BufReadPre", "BufNewFile" },
-    opts = {
-      on_attach = function(buf)
-        local gs = require("gitsigns")
-        local function m(l, r, d) vim.keymap.set("n", l, r, { buffer = buf, desc = d }) end
-        m("]c", gs.next_hunk, "Next hunk")
-        m("[c", gs.prev_hunk, "Prev hunk")
-        m("<leader>gs", gs.stage_hunk, "Stage hunk")
-        m("<leader>gr", gs.reset_hunk, "Reset hunk")
-        m("<leader>gp", gs.preview_hunk, "Preview hunk")
-        m("<leader>gb", function() gs.blame_line({ full = true }) end, "Blame line")
-      end,
-    } },
-
-  -- completion
-  { "saghen/blink.cmp", version = "1.*", event = "InsertEnter",
-    opts = {
-      keymap = { preset = "default" },
-      sources = { default = { "lsp", "path", "snippets", "buffer" } },
-      signature = { enabled = true },
-    } },
-
-  -- json/yaml schemas
-  { "b0o/schemastore.nvim", lazy = true },
-
-  -- LSP (native; binaries come from mise on your PATH)
-  { "neovim/nvim-lspconfig", event = { "BufReadPre", "BufNewFile" },
-    dependencies = { "saghen/blink.cmp", "b0o/schemastore.nvim" },
-    config = function()
-      vim.lsp.config("*", { capabilities = require("blink.cmp").get_lsp_capabilities() })
-
-      vim.lsp.config("lua_ls", {
-        settings = { Lua = { diagnostics = { globals = { "vim" } } } } })
-      vim.lsp.config("basedpyright", {
-        settings = { basedpyright = { analysis = { typeCheckingMode = "standard" } } } })
-      vim.lsp.config("gopls", {
-        settings = { gopls = { analyses = { unusedparams = true }, staticcheck = true,
-          hints = { parameterNames = true, assignVariableTypes = true } } } })
-      vim.lsp.config("yamlls", {
-        settings = { yaml = { schemaStore = { enable = false, url = "" },
-          schemas = require("schemastore").yaml.schemas() } } })
-      vim.lsp.config("jsonls", {
-        settings = { json = { schemas = require("schemastore").json.schemas(),
-          validate = { enable = true } } } })
-
-      vim.lsp.enable({ "lua_ls", "basedpyright", "ruff", "gopls", "yamlls", "jsonls" })
-
-      vim.api.nvim_create_autocmd("LspAttach", {
-        callback = function(ev)
-          local b = ev.buf
-          local function m(l, fn, d) vim.keymap.set("n", l, fn, { buffer = b, desc = d }) end
-          m("gd", vim.lsp.buf.definition, "Definition")
-          m("gr", vim.lsp.buf.references, "References")
-          m("gi", vim.lsp.buf.implementation, "Implementation")
-          m("K",  vim.lsp.buf.hover, "Hover")
-          m("<leader>cr", vim.lsp.buf.rename, "Rename")
-          m("<leader>ca", vim.lsp.buf.code_action, "Code action")
-          m("[d", function() vim.diagnostic.jump({ count = -1 }) end, "Prev diagnostic")
-          m("]d", function() vim.diagnostic.jump({ count = 1 })  end, "Next diagnostic")
-        end,
-      })
-    end },
-
-  -- formatting
-  { "stevearc/conform.nvim", event = "BufWritePre",
-    keys = { { "<leader>cf",
-      function() require("conform").format({ lsp_format = "fallback" }) end, desc = "Format" } },
-    opts = {
-      format_on_save = { timeout_ms = 1500, lsp_format = "fallback" },
-      formatters_by_ft = {
-        python = { "ruff_format" },
-        go = { "goimports", "gofumpt" },
-        yaml = { "prettier" },
-        json = { "prettier" },
-      },
-    } },
-
-  -- TUIs in floating terminals
-  { "akinsho/toggleterm.nvim", version = "*", event = "VeryLazy",
-    config = function()
-      require("toggleterm").setup({ open_mapping = [[<c-\>]], direction = "float",
-        float_opts = { border = "curved" } })
-      local Terminal = require("toggleterm.terminal").Terminal
-      local cache = {}
-      local function tui(cmd)
-        return function()
-          cache[cmd] = cache[cmd] or Terminal:new({ cmd = cmd, direction = "float",
-            float_opts = { border = "curved" }, hidden = true,
-            on_open = function() vim.cmd("startinsert!") end })
-          cache[cmd]:toggle()
-        end
-      end
-      local map = vim.keymap.set
-      map("n", "<leader>Tg", tui("lazygit"),     { desc = "Lazygit" })
-      map("n", "<leader>Td", tui("lazydocker"),  { desc = "Lazydocker" })
-      map("n", "<leader>Tq", tui("lazysql"),     { desc = "LazySQL" })
-      map("n", "<leader>Th", tui("lazyssh"),     { desc = "LazySSH" })
-      map("n", "<leader>Tk", tui("k9s"),         { desc = "k9s" })
-      map("n", "<leader>Tj", tui("lazyjournal"), { desc = "lazyjournal" })
-      map("n", "<leader>Ta", tui("claws"),       { desc = "claws (AWS)" })
-    end },
-}, { change_detection = { notify = false } })
-
--- global niceties
-vim.keymap.set("n", "<leader>w", "<cmd>w<cr>", { desc = "Save" })
-vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<cr>", { desc = "Clear search" })
-vim.keymap.set("t", "<C-x>", [[<C-\><C-n>]], { desc = "Terminal: normal mode" })
-
--- filetype indents
-vim.api.nvim_create_autocmd("FileType", {
-  pattern = { "yaml", "json", "jsonc", "lua" },
-  callback = function() vim.bo.shiftwidth = 2; vim.bo.tabstop = 2 end,
-})
-vim.api.nvim_create_autocmd("FileType", {
-  pattern = { "go" },
-  callback = function() vim.bo.expandtab = false end, -- Go uses tabs
-})
-LUA
-  ok "Wrote $cfg/init.lua"
+  # Copy contents of config/nvim/ into ~/.config/nvim/ (note the trailing /.).
+  cp -R "$src/." "$cfg/"
+  ok "Installed config -> $cfg"
 }
 
 # --- run ------------------------------------------------------------------- #
 main() {
-  hr; info "Neovim IDE bootstrap (mise-powered)"; hr
+  hr; info "CJ-IDE bootstrap (mise-powered)"; hr
   detect_pm
   install_build_tools
   install_mise

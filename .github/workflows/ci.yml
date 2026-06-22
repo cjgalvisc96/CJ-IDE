@@ -1,0 +1,27 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  shellcheck:
+    name: Lint shell scripts
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: bash syntax check
+        run: bash -n install.sh prune.sh
+      - name: shellcheck
+        run: shellcheck install.sh prune.sh
+
+  luacheck:
+    name: Lint Lua config
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install luacheck
+        run: sudo apt-get update && sudo apt-get install -y luarocks && sudo luarocks install luacheck
+      - name: luacheck
+        run: luacheck config/nvim --globals vim --no-max-line-length

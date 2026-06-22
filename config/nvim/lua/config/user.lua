@@ -100,16 +100,22 @@ map("n", "<leader>t", "<cmd>ToggleTerm<cr>", { desc = "New terminal" })
 map("n", "J", "}", { desc = "Next paragraph" })
 map("n", "K", "{", { desc = "Previous paragraph" })
 
--- folding: f toggles the fold under the cursor, F toggles every fold.
--- Single instant keys (no fa/fu prefix), so `f` never waits on timeoutlen.
-map("n", "f", function()
-  pcall(vim.cmd, "normal! za")
-end, { desc = "Toggle fold" })
+-- folding: f toggles the fold under the cursor; if the cursor isn't inside any
+-- block (e.g. a top-level import line) it folds/unfolds EVERYTHING instead, so
+-- `f` always does something. F always toggles every fold. Both are instant.
 local all_folds_closed = false
-map("n", "F", function()
+local function toggle_all_folds()
   all_folds_closed = not all_folds_closed
   vim.cmd("normal! " .. (all_folds_closed and "zM" or "zR"))
-end, { desc = "Toggle all folds" })
+end
+map("n", "f", function()
+  if vim.fn.foldlevel(".") > 0 then
+    pcall(vim.cmd, "normal! za") -- toggle the fold at the cursor
+  else
+    toggle_all_folds() -- not in a block: fold/unfold everything
+  end
+end, { desc = "Toggle fold (or all if not in a block)" })
+map("n", "F", toggle_all_folds, { desc = "Toggle all folds" })
 
 -- copy the whole file to the system clipboard
 map("n", "vv", "<cmd>%yank +<cr>", { desc = "Copy whole file" })

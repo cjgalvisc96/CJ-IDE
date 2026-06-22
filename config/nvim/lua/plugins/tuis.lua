@@ -30,11 +30,11 @@ return {
       end
 
       local map = vim.keymap.set
-      map("n", "<leader>Tg", tui("lazygit"), { desc = "Lazygit" })
-      map("n", "<leader>Td", tui("lazydocker"), { desc = "Lazydocker" })
-      map("n", "<leader>Tq", tui("lazysql"), { desc = "LazySQL" })
-      map("n", "<leader>Tk", tui("k9s"), { desc = "k9s" })
-      map("n", "<leader>Tj", tui("lazyjournal"), { desc = "lazyjournal" })
+      map("n", "<leader>lg", tui("lazygit"), { desc = "Lazygit" })
+      map("n", "<leader>ld", tui("lazydocker"), { desc = "Lazydocker" })
+      map("n", "<leader>lk", tui("k9s"), { desc = "k9s" })
+      map("n", "<leader>ls", tui("lazysql"), { desc = "LazySQL" })
+      map("n", "<leader>lj", tui("lazyjournal"), { desc = "lazyjournal" })
     end,
   },
 }

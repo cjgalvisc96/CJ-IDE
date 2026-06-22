@@ -88,7 +88,7 @@ Markdown.
 - **conform.nvim** — format-on-save (`ruff`, `gofumpt`/`goimports`, `prettier`), toggle with `:FormatToggle`
 - **toggleterm** — TUIs in floating terminals
 
-**TUIs** (mapped under `<leader>T`): lazygit, lazydocker, lazysql, k9s,
+**TUIs** (mapped under `<leader>l`): lazygit, lazydocker, lazysql, k9s,
 lazyjournal.
 
 ## Keybindings
@@ -97,18 +97,20 @@ Leader is **Space**.
 
 | Keys | Action |
 |------|--------|
-| `<leader>ff` / `fg` / `fb` | Find files / live grep / buffers |
-| `<leader>fs` / `fd` / `fh` / `fr` | Symbols / diagnostics / help / resume |
+| `<leader>p` / `<leader>b` | Open file / switch buffer |
+| `<leader>f` / `<leader>F` | Search current file / whole project |
 | `<leader>e` | File tree (neo-tree, right panel) |
-| `gd` / `grr` / `gri` / `gy` | Definition / references / implementation / type def (fzf-lua) |
-| `K` | Hover (Neovim default) · `grn` rename · `gra` code action (defaults) |
+| `gd` / `gr` / `gi` / `gy` | Definition / references / implementation / type def |
+| `gb` | Jump back (e.g. after `gd`) |
+| `gh` | Hover docs |
+| `<leader>cd` | Line diagnostics (float) |
 | `<leader>cr` / `ca` / `cf` | Rename / code action / format |
 | `[d` / `]d` | Prev / next diagnostic |
 | `]c` / `[c` | Next / prev git hunk |
 | `<leader>gs` / `gr` / `gp` / `gb` | Stage / reset / preview hunk, blame line |
 | `<leader>w` | Save |
 | `<C-\>` | Toggle floating terminal |
-| `<leader>Tg Td Tq Tk Tj` | lazygit, lazydocker, lazysql, k9s, lazyjournal |
+| `<leader>lg ld ls lk lj` | lazygit, lazydocker, lazysql, k9s, lazyjournal |
 | `<C-x>` (terminal) | Back to normal mode |
 
 ### VSCode-style keys
@@ -118,12 +120,12 @@ CJ-IDE ships a **VSCode/VSCodeVim-flavored** keymap in `lua/config/user.lua`
 
 | Keys | Action |
 |------|--------|
-| `<leader>p` / `<leader>a` | Quick-open file / find in files |
-| `<leader>q` / `<leader>n` | Close editor / new file |
-| `<leader>t` | New terminal |
-| `<leader>s` | Split editor (vertical) |
-| `<leader>l` / `<leader>h` | Focus split right / left |
+| `<leader>p` / `<leader>f` | Quick-open file / find in files |
 | `<leader>b` | Switch buffer (fuzzy) |
+| `<leader>q` | Close editor |
+| `<C-n>` / `<C-s>` | New file / split editor (vertical) |
+| `<C-h>` / `<C-l>` | Focus split left / right |
+| `<leader>t` | New terminal |
 | `<leader>m` | Toggle comment (normal + visual) |
 | `<leader>j` / `<leader>k` | Move line/selection down / up |
 | `f` `F` `fa` `fu` | Fold / unfold (recursive / all) |

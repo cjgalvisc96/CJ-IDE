@@ -286,8 +286,8 @@ Done. Next:
 Keys:  <leader> is Space.
   <leader>f*  find (files/grep/buffers/symbols/diagnostics)   <leader>e  explorer
   <leader>g*  git hunks/blame      <leader>c{a,r,f}  code action/rename/format
-  <leader>T*  TUIs -> Tg lazygit  Td lazydocker  Tq lazysql
-              Tk k9s  Tj lazyjournal
+  <leader>l*  TUIs -> lg lazygit  ld lazydocker  ls lazysql
+              lk k9s  lj lazyjournal
 
 Notes:
   * Make sure KUBECONFIG is set in your shell so k9s works.

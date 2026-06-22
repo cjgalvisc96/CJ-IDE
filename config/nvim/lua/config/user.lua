@@ -21,12 +21,22 @@ vim.opt.foldlevel = 99 -- open everything by default
 -- ── files / search / buffers ──────────────────────────────────────────────
 map("n", "<leader>q", "<cmd>bdelete<cr>", { desc = "Close editor" })
 map("n", "<leader>b", "<cmd>FzfLua buffers<cr>", { desc = "Switch buffer" })
-map("n", "<leader>a", "<cmd>FzfLua live_grep<cr>", { desc = "Find in files" })
+map("n", "<leader>f", "<cmd>FzfLua lgrep_curbuf<cr>", { desc = "Search in current file" })
+map("n", "<leader>F", "<cmd>FzfLua live_grep<cr>", { desc = "Search in project" })
 map("n", "<leader>p", "<cmd>FzfLua files<cr>", { desc = "Quick open file" })
-map("n", "<leader>n", "<cmd>enew<cr>", { desc = "New file" })
-map("n", "<leader>l", "<C-w>l", { desc = "Focus split on the right" })
-map("n", "<leader>h", "<C-w>h", { desc = "Focus split on the left" })
-map("n", "<leader>s", "<cmd>vsplit<cr>", { desc = "Split editor (vertical)" })
+map("n", "<C-n>", function()
+  -- Prompt for a name (prefilled with the current file's folder), then open it.
+  -- The file is written to disk on the first :w.
+  local dir = vim.fn.expand("%:p:h")
+  vim.ui.input({ prompt = "New file: ", default = dir .. "/", completion = "file" }, function(name)
+    if name and name ~= "" then
+      vim.cmd.edit(vim.fn.fnameescape(name))
+    end
+  end)
+end, { desc = "New file (named)" })
+map("n", "<C-s>", "<cmd>vsplit<cr>", { desc = "Split editor (vertical)" })
+map("n", "<C-h>", "<C-w>h", { desc = "Focus split on the left" })
+map("n", "<C-l>", "<C-w>l", { desc = "Focus split on the right" })
 
 -- comments (built-in gc; remap=true so the gcc/gc operator runs)
 map("n", "<leader>m", "gcc", { remap = true, desc = "Comment line" })
@@ -37,6 +47,9 @@ map("n", "<leader>j", "<cmd>m .+1<cr>==", { desc = "Move line down" })
 map("n", "<leader>k", "<cmd>m .-2<cr>==", { desc = "Move line up" })
 map("x", "<leader>j", ":m '>+1<cr>gv=gv", { desc = "Move selection down" })
 map("x", "<leader>k", ":m '<-2<cr>gv=gv", { desc = "Move selection up" })
+
+-- jump back to where you came from, e.g. after gd (forward is still <C-i>/Tab)
+map("n", "gb", "<C-o>", { desc = "Jump back" })
 
 -- ── terminal ──────────────────────────────────────────────────────────────
 map("n", "<leader>t", "<cmd>ToggleTerm<cr>", { desc = "New terminal" })
@@ -59,9 +72,6 @@ map("n", "f", fold("zC"), { desc = "Fold recursively" })
 map("n", "F", fold("zO"), { desc = "Unfold recursively" })
 map("n", "fa", fold("zM"), { desc = "Fold all" })
 map("n", "fu", fold("zR"), { desc = "Unfold all" })
-
--- select to end of line
-map("n", "vf", "v$", { desc = "Select to line end" })
 
 -- copy the whole file to the system clipboard
 map("n", "vv", "<cmd>%yank +<cr>", { desc = "Copy whole file" })

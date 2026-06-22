@@ -41,6 +41,13 @@ return {
 
       vim.lsp.enable({ "lua_ls", "basedpyright", "ruff", "gopls", "yamlls", "jsonls" })
 
+      -- Free the `gr` prefix: Neovim 0.11+ ships default maps on grn/gra/grr/gri,
+      -- which would make a bare `gr` wait (and shadow it). We use <leader>c* for
+      -- rename/code-action, so drop those defaults and give a clean g-nav scheme.
+      for _, key in ipairs({ "grn", "gra", "grr", "gri", "grt" }) do
+        pcall(vim.keymap.del, "n", key)
+      end
+
       vim.api.nvim_create_autocmd("LspAttach", {
         callback = function(ev)
           local b = ev.buf
@@ -48,19 +55,17 @@ return {
             vim.keymap.set("n", l, fn, { buffer = b, desc = d })
           end
           -- Navigation via fzf-lua pickers: a searchable floating list instead
-          -- of dumping results into the quickfix window.
-          --
-          -- We deliberately do NOT map bare `gr`. Neovim 0.11+ ships default LSP
-          -- maps on the `gr` prefix (grn rename, gra code action, gri impl), so
-          -- a complete `gr` map would shadow all of them. Instead we override the
-          -- prefix leaves we want with nicer pickers and leave the rest as-is.
-          -- K (hover) and [d / ]d (diagnostics) are Neovim defaults already.
+          -- of dumping results into the quickfix window. Simple g-key scheme:
+          --   gd definition · gr references · gi implementation · gy type · gh hover
+          -- (gb = jump back lives in user.lua). [d / ]d diagnostics are defaults.
           m("gd", "<cmd>FzfLua lsp_definitions<cr>", "Definition")
-          m("grr", "<cmd>FzfLua lsp_references<cr>", "References")
-          m("gri", "<cmd>FzfLua lsp_implementations<cr>", "Implementation")
+          m("gr", "<cmd>FzfLua lsp_references<cr>", "References")
+          m("gi", "<cmd>FzfLua lsp_implementations<cr>", "Implementation")
           m("gy", "<cmd>FzfLua lsp_typedefs<cr>", "Type definition")
+          m("gh", vim.lsp.buf.hover, "Hover docs")
           m("<leader>cr", vim.lsp.buf.rename, "Rename")
           m("<leader>ca", vim.lsp.buf.code_action, "Code action")
+          m("<leader>cd", vim.diagnostic.open_float, "Line diagnostics")
         end,
       })
     end,

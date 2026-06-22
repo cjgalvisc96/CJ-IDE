@@ -126,10 +126,11 @@ install_runtimes() {
 }
 
 install_cli_tools() {
-  info "Installing CLI tools via mise (ripgrep, fd, fzf)..."
+  info "Installing CLI tools via mise (ripgrep, fd, fzf, tree-sitter)..."
   mise_use "ripgrep@latest"
   mise_use "fd@latest"
   mise_use "fzf@latest"
+  mise_use "tree-sitter@latest"   # nvim-treesitter (main branch) compiles parsers with this
 }
 
 install_lsp_and_formatters() {

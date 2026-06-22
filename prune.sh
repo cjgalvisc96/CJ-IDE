@@ -95,7 +95,7 @@ find_mise() {
 # `mise unuse` since unuse matches on the tool name.
 CJ_TOOLS=(
   "node" "go" "python" "neovim"
-  "ripgrep" "fd" "fzf"
+  "ripgrep" "fd" "fzf" "tree-sitter"
   "ruff" "lua-language-server"
   "go:golang.org/x/tools/gopls"
   "go:mvdan.cc/gofumpt"

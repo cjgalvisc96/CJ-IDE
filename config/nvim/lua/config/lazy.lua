@@ -12,4 +12,7 @@ vim.opt.rtp:prepend(lazypath)
 require("lazy").setup({
   spec = { { import = "plugins" } },
   change_detection = { notify = false },
+  -- None of our plugins need luarocks; disabling it removes the hererocks
+  -- install error/warnings from :checkhealth.
+  rocks = { enabled = false },
 })

@@ -25,3 +25,11 @@ vim.diagnostic.config({
   virtual_text = { prefix = "●" },
   float = { border = "rounded", source = "if_many" },
 })
+
+-- Disable the remote-host providers we don't use. None of the bundled plugins
+-- are legacy rpc plugins, so this just removes the optional :checkhealth
+-- warnings (and shaves a little startup work).
+vim.g.loaded_node_provider = 0
+vim.g.loaded_perl_provider = 0
+vim.g.loaded_python3_provider = 0
+vim.g.loaded_ruby_provider = 0

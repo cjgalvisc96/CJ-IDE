@@ -93,6 +93,20 @@ install_build_tools() {
   ok "Build tools done"
 }
 
+# --- clipboard tool (so `clipboard=unnamedplus` actually works) ------------ #
+install_clipboard() {
+  # macOS ships pbcopy/pbpaste; nothing to do.
+  [ "$PM" = "mac" ] && return 0
+  info "Installing clipboard tool (wl-clipboard for Wayland, xclip for X11)..."
+  case "$PM" in
+    apt)    $SUDO apt-get install -y wl-clipboard xclip || true ;;
+    dnf)    $SUDO dnf install -y wl-clipboard xclip || true ;;
+    pacman) $SUDO pacman -S --needed --noconfirm wl-clipboard xclip || true ;;
+    zypper) $SUDO zypper install -y wl-clipboard xclip || true ;;
+  esac
+  ok "Clipboard tool done"
+}
+
 # --- mise ------------------------------------------------------------------ #
 MISE_BIN=""
 install_mise() {
@@ -229,6 +243,7 @@ main() {
   hr; info "CJ-IDE bootstrap (mise-powered)"; hr
   detect_pm
   install_build_tools
+  install_clipboard
   install_mise
   install_runtimes
   install_cli_tools

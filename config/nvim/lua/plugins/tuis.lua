@@ -34,7 +34,6 @@ return {
       map("n", "<leader>Th", tui("lazyssh"), { desc = "LazySSH" })
       map("n", "<leader>Tk", tui("k9s"), { desc = "k9s" })
       map("n", "<leader>Tj", tui("lazyjournal"), { desc = "lazyjournal" })
-      map("n", "<leader>Ta", tui("claws"), { desc = "claws (AWS)" })
     end,
   },
 }

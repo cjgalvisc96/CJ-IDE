@@ -107,7 +107,6 @@ CJ_TOOLS=(
   "lazygit" "lazydocker" "k9s"
   "go:github.com/jorgerojas26/lazysql"
   "go:github.com/Lifailon/lazyjournal"
-  "go:github.com/clawscli/claws/cmd/claws"
 )
 
 # --- remove the Neovim config + runtime data ------------------------------- #

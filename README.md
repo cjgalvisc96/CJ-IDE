@@ -3,10 +3,10 @@
 A custom, batteries-included **Neovim IDE** that installs in one command and is
 ready to use — no manual plugin wrangling, no `mason`, no per-machine setup.
 
-Everything (Neovim itself, language runtimes, LSP servers, formatters and a set
-of handy TUIs) is installed **globally via [mise](https://mise.jdx.dev)** and
-found on your `PATH`. The Neovim config is plain, readable Lua you can fork and
-tweak. Free to use for whatever you want — see [LICENSE](LICENSE).
+Everything (Neovim itself, language runtimes, LSP servers and formatters) is
+installed **globally via [mise](https://mise.jdx.dev)** and found on your
+`PATH`. The Neovim config is plain, readable Lua you can fork and tweak. Free to
+use for whatever you want — see [LICENSE](LICENSE).
 
 > Works on Debian/Ubuntu, Fedora, Arch, RHEL/Rocky/Alma, openSUSE and macOS.
 
@@ -46,7 +46,7 @@ Then:
 |------|--------|
 | `./install.sh` | Install everything and write the config |
 | `./install.sh --backup` | Move an existing `~/.config/nvim` aside first |
-| `./install.sh --no-tuis` | Skip the TUI tools |
+| `./install.sh --check` | Verify the expected tools are on `PATH`, then exit |
 | `./install.sh --help` | Show usage |
 
 Environment override: `CJ_IDE_REPO_URL` (config source for `curl | bash`).
@@ -78,16 +78,17 @@ Markdown.
 
 **Plugins** (managed by [lazy.nvim](https://github.com/folke/lazy.nvim)):
 
-- **tokyonight** theme + **lualine** statusline + **which-key** hints
+- **alpha-nvim** — CJ-IDE start screen / homepage on launch
+- **tokyonight** theme + **lualine** statusline (shows the file's absolute path) + **which-key** hints
 - **nvim-treesitter** — syntax-aware highlighting & indentation
 - **fzf-lua** — fuzzy finder (files, grep, symbols, diagnostics) + LSP nav
 - **neo-tree** — file tree as a side panel docked on the right
 - **blink.cmp** — completion + signature help, fed by **schemastore** for JSON/YAML
 - **nvim-lspconfig** — native LSP (`lua_ls`, `basedpyright`, `ruff`, `gopls`, `yamlls`, `jsonls`)
-- **toggleterm** — TUIs in floating terminals
+- **toggleterm** — floating terminal (`<C-\>`)
 
-**TUIs** (mapped under `<leader>l`): lazygit, lazydocker, lazysql, k9s,
-lazyjournal.
+> The lazygit/lazydocker/lazysql/k9s/lazyjournal launchers were removed — run
+> those tools straight from your shell, outside the IDE.
 
 ## Keybindings
 
@@ -108,7 +109,6 @@ Leader is **Space**. **Forgot a key? Press `?`** for the full cheatsheet
 | `[d` / `]d` | Prev / next diagnostic |
 | `<leader>w` | Save |
 | `<C-\>` | Toggle floating terminal |
-| `<leader>lg ld ls lk lj` | lazygit, lazydocker, lazysql, k9s, lazyjournal |
 | `<C-x>` (terminal) | Back to normal mode |
 
 ### VSCode-style keys
@@ -137,9 +137,12 @@ CJ-IDE ships a **VSCode/VSCodeVim-flavored** keymap in `lua/config/user.lua`
 **Autosave:** files write themselves ~1s after you stop changing them (like
 VSCode `files.autoSave: afterDelay`). Configured in `lua/config/user.lua`.
 
-**File-path bar:** each editor window shows the **absolute path** of its file in a
-winbar across the top (with a `[+]` modified flag). File windows only — neo-tree
-and terminals stay bare. See `lua/config/winbar.lua`.
+**File path:** the **lualine statusline** shows the focused file's **absolute
+path** (with a `●` modified flag). Configured in `lua/plugins/ui.lua` — change
+`path = 2` to `1` (relative) or `4` (name only).
+
+**Homepage:** launching `nvim` with no file opens the CJ-IDE start screen
+(alpha-nvim) with quick actions. See `lua/plugins/dashboard.lua`.
 
 > Note: `?` is remapped from reverse-search to the cheatsheet (reverse search is
 > still `/` then `N`). It lives in `lua/config/help.lua` — delete the map there to
@@ -157,8 +160,8 @@ config/
     ├── lazy-lock.json     pinned plugin versions (reproducible installs)
     └── lua/
         ├── config/        options, keymaps, autocmds, lazy bootstrap, user.lua,
-        │                  winbar (file-path bar), help (`?` cheatsheet)
-        └── plugins/       one file per concern (ui, lsp, git, motion, tuis, …)
+        │                  help (`?` cheatsheet)
+        └── plugins/       one file per concern (ui, lsp, dashboard, terminal, …)
 ```
 
 `config/nvim/` is the single source of truth — the installer copies it into
@@ -177,7 +180,6 @@ get installed; both scripts read it, so they can't drift apart.
 
 - The installer pulls minimal build tools (git, curl, a C compiler) from your OS
   package manager; everything else comes from mise.
-- Make sure `KUBECONFIG` is set so k9s works.
 - For file-tree icons to render, use a [Nerd Font](https://www.nerdfonts.com)
   in your terminal (otherwise neo-tree's icons show as missing glyphs).
 

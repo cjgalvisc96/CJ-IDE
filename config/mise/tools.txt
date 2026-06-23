@@ -5,8 +5,7 @@
 #   * one `mise` tool spec per line  (e.g. node@lts, go:host/pkg@latest)
 #   * blank lines and lines starting with `#` are ignored
 #   * `# [section]` headers group tools; install.sh installs runtimes first
-#     (so the go:/npm: backends below can build) and treats [tuis] as optional
-#     (skipped with --no-tuis)
+#     (so the go:/npm: backends below can build)
 #
 # Pin a version for reproducibility by replacing @latest, e.g. `ripgrep@14.1.0`.
 # Neovim is pinned to a major.minor on purpose: an unpinned jump to a new
@@ -34,10 +33,3 @@ npm:basedpyright@latest
 npm:yaml-language-server@latest
 npm:vscode-langservers-extracted@latest
 npm:prettier@latest
-
-# [tuis]
-lazygit@latest
-lazydocker@latest
-k9s@latest
-go:github.com/jorgerojas26/lazysql@latest
-go:github.com/Lifailon/lazyjournal@latest

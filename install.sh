@@ -3,8 +3,7 @@
 # install.sh — one-shot setup for CJ-IDE, a custom Neovim IDE.
 #
 # Uses mise (https://mise.jdx.dev) to install almost everything GLOBALLY:
-#   Neovim, Node/Go/Python, ripgrep/fd/fzf, the TUIs (lazygit, lazydocker,
-#   lazysql, k9s, lazyjournal), and all LSP servers/formatters.
+#   Neovim, Node/Go/Python, ripgrep/fd/fzf, and all LSP servers/formatters.
 # Only build tools (git/curl/compiler) come from the OS package manager.
 # Then it installs the Neovim config from this repo's config/nvim/ into
 # ~/.config/nvim (cloning the repo first if you ran it via `curl | bash`).
@@ -19,7 +18,6 @@ set -euo pipefail
 # --------------------------------------------------------------------------- #
 REPO_URL="${CJ_IDE_REPO_URL:-https://github.com/cjgalvisc96/CJ-IDE.git}"
 DO_BACKUP=0
-DO_TUIS=1
 DO_CHECK=0
 
 usage() {
@@ -29,7 +27,6 @@ install.sh — one-shot setup for CJ-IDE, a custom Neovim IDE.
 Usage:
   ./install.sh            install everything + write config
   ./install.sh --backup   move an existing ~/.config/nvim aside first
-  ./install.sh --no-tuis  skip the TUI tools
   ./install.sh --check    verify the expected tools are on PATH, then exit
   ./install.sh --help
 
@@ -41,7 +38,6 @@ EOF
 for arg in "$@"; do
   case "$arg" in
     --backup)  DO_BACKUP=1 ;;
-    --no-tuis) DO_TUIS=0 ;;
     --check)   DO_CHECK=1 ;;
     -h|--help) usage; exit 0 ;;
     *) echo "Unknown flag: $arg (try --help)" >&2; exit 1 ;;
@@ -158,11 +154,6 @@ install_tools() {
   install_section runtimes "runtimes (node, go, python, neovim)"
   install_section cli      "CLI tools (ripgrep, fd, fzf, tree-sitter)"
   install_section lsp      "LSP servers + formatters"
-  if [ "$DO_TUIS" -eq 1 ]; then
-    install_section tuis "TUIs"
-  else
-    info "Skipping TUIs (--no-tuis)"
-  fi
 }
 
 # --- shell rc: activate mise ----------------------------------------------- #
@@ -238,7 +229,6 @@ EXPECTED_BINS=(
   nvim node go python rg fd fzf tree-sitter
   ruff lua-language-server gopls gofumpt goimports
   basedpyright-langserver yaml-language-server vscode-json-language-server prettier
-  lazygit lazydocker k9s lazysql lazyjournal
 )
 doctor() {
   export PATH="$HOME/.local/share/mise/shims:$HOME/.local/bin:$PATH"
@@ -284,13 +274,8 @@ Done. Next:
      confirm the LSP attaches and formatting-on-save works.
 
 Keys:  <leader> is Space.
-  <leader>f*  find (files/grep/buffers/symbols/diagnostics)   <leader>e  explorer
-  <leader>g*  git hunks/blame      <leader>c{a,r,f}  code action/rename/format
-  <leader>l*  TUIs -> lg lazygit  ld lazydocker  ls lazysql
-              lk k9s  lj lazyjournal
-
-Notes:
-  * Make sure KUBECONFIG is set in your shell so k9s works.
+  <leader>p  open file    <leader>F  search project    <leader>e  explorer
+  Press  ?  (or :CJHelp) inside nvim for the full cheatsheet.
 EOF
 }
 

@@ -44,15 +44,10 @@ local SECTIONS = {
     { "yf yu yb", "Yank to end / word / to start" },
     { "yp yq yk yc", "Yank inside ()  ''  {}  []" },
   } },
-  { "Terminal · TUIs", {
+  { "Terminal", {
     { "<C-\\>", "Toggle floating terminal" },
     { "<leader>t", "New terminal" },
     { "<C-x>", "Terminal → normal mode" },
-    { "<leader>lg", "Lazygit" },
-    { "<leader>ld", "Lazydocker" },
-    { "<leader>ls", "LazySQL" },
-    { "<leader>lk", "k9s" },
-    { "<leader>lj", "lazyjournal" },
   } },
   { "Help · Misc", {
     { "?  /  :CJHelp", "Show this cheatsheet" },

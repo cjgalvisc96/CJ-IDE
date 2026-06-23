@@ -1,6 +1,6 @@
 -- CJ-IDE — Neovim entry point
--- LSP servers, formatters and TUIs are installed globally via mise and found
--- on your PATH (see install.sh). No mason needed.
+-- LSP servers and formatters are installed globally via mise and found on your
+-- PATH (see install.sh). No mason needed.
 --
 -- Config is split into modules under lua/:
 --   config/options   editor options + diagnostics
@@ -20,8 +20,5 @@ require("config.lazy")
 -- overrides the defaults above. Edit lua/config/user.lua to change them.
 pcall(require, "config.user")
 
--- Loaded after user.lua so they can't be clobbered:
---   winbar  absolute-path bar on each file window
---   help    `?` / :CJHelp cheatsheet of every binding
-require("config.winbar")
+-- Loaded after user.lua so its `?` / :CJHelp cheatsheet can't be clobbered.
 require("config.help")

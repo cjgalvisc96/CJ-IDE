@@ -73,8 +73,8 @@ map("n", "<leader>n", function()
   end)
 end, { desc = "New file (named)" })
 map("n", "<leader>s", "<cmd>vsplit<cr>", { desc = "Split editor (vertical)" })
--- Focus splits with <leader> + arrows (<leader>l is the TUI prefix, so it can't
--- be a focus key). Left/right arrows are symmetric and unambiguous.
+-- Focus splits with <leader> + arrows. Left/right arrows are symmetric and
+-- unambiguous, and leave the home-row keys free for edits.
 map("n", "<leader><Left>", "<C-w>h", { desc = "Focus split on the left" })
 map("n", "<leader><Right>", "<C-w>l", { desc = "Focus split on the right" })
 

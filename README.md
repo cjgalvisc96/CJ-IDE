@@ -91,10 +91,12 @@ lazyjournal.
 
 ## Keybindings
 
-Leader is **Space**.
+Leader is **Space**. **Forgot a key? Press `?`** for the full cheatsheet
+(`:CJHelp`) — a floating panel listing every binding below.
 
 | Keys | Action |
 |------|--------|
+| `?` | Show the keybindings cheatsheet (`:CJHelp`) |
 | `<leader>p` / `<leader>b` | Open file / switch buffer |
 | `<leader>f` / `<leader>F` | Search current file / whole project |
 | `<leader>e` | File tree (neo-tree, right panel) |
@@ -135,6 +137,14 @@ CJ-IDE ships a **VSCode/VSCodeVim-flavored** keymap in `lua/config/user.lua`
 **Autosave:** files write themselves ~1s after you stop changing them (like
 VSCode `files.autoSave: afterDelay`). Configured in `lua/config/user.lua`.
 
+**File-path bar:** each editor window shows the **absolute path** of its file in a
+winbar across the top (with a `[+]` modified flag). File windows only — neo-tree
+and terminals stay bare. See `lua/config/winbar.lua`.
+
+> Note: `?` is remapped from reverse-search to the cheatsheet (reverse search is
+> still `/` then `N`). It lives in `lua/config/help.lua` — delete the map there to
+> get stock `?` back.
+
 ## Project layout
 
 ```
@@ -146,7 +156,8 @@ config/
     ├── init.lua           entry point
     ├── lazy-lock.json     pinned plugin versions (reproducible installs)
     └── lua/
-        ├── config/        options, keymaps, autocmds, lazy bootstrap, user.lua
+        ├── config/        options, keymaps, autocmds, lazy bootstrap, user.lua,
+        │                  winbar (file-path bar), help (`?` cheatsheet)
         └── plugins/       one file per concern (ui, lsp, git, motion, tuis, …)
 ```
 

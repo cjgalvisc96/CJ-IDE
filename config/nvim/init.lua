@@ -19,3 +19,9 @@ require("config.lazy")
 -- Keybindings tuned to match a VSCode/VSCodeVim workflow. Loaded last so it
 -- overrides the defaults above. Edit lua/config/user.lua to change them.
 pcall(require, "config.user")
+
+-- Loaded after user.lua so they can't be clobbered:
+--   winbar  absolute-path bar on each file window
+--   help    `?` / :CJHelp cheatsheet of every binding
+require("config.winbar")
+require("config.help")

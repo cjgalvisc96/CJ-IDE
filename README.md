@@ -3,73 +3,22 @@
 A custom, batteries-included **Neovim IDE** that installs in one command and is
 ready to use — no manual plugin wrangling, no `mason`, no per-machine setup.
 
-Everything (Neovim itself, language runtimes, LSP servers and formatters) is
-installed **globally via [mise](https://mise.jdx.dev)** and found on your
-`PATH`. The Neovim config is plain, readable Lua you can fork and tweak. Free to
-use for whatever you want — see [LICENSE](LICENSE).
-
 > Works on Debian/Ubuntu, Fedora, Arch, RHEL/Rocky/Alma, openSUSE and macOS.
 
-<!-- TODO: add a screenshot or asciinema GIF here — it sells the project. -->
-<!-- ![CJ-IDE](docs/screenshot.png) -->
+<img width="1914" height="1056" alt="CJ-IDE" src="https://github.com/user-attachments/assets/4078b69b-2502-4bfa-99df-28e032b4b50b" />
 
-## Quick start
 
-Clone and run (recommended — you can read the script first):
-
-```bash
-git clone https://github.com/cjgalvisc96/CJ-IDE.git
-cd CJ-IDE
-./install.sh
-```
-
-Or one-liner (downloads `install.sh`, which clones the repo for the config):
+## Install
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/cjgalvisc96/CJ-IDE/main/install.sh | bash
 ```
 
-> **Heads up:** piping a script from the internet into `bash` runs it with your
-> user's privileges. Prefer the clone-and-read method if you want to audit it
-> first — it's short and commented.
-
-Then:
-
-1. Restart your shell (or `exec $SHELL`) so `mise` and its tools are on `PATH`.
-2. Run `nvim`. Plugins install on first launch — let it finish.
-3. Inside Neovim, run `:checkhealth` and open a `.py`/`.go`/`.yaml`/`.json`
-   file to confirm the LSP attaches.
-
-### Install options
-
-| Flag | Effect |
-|------|--------|
-| `./install.sh` | Install everything and write the config |
-| `./install.sh --backup` | Move an existing `~/.config/nvim` aside first |
-| `./install.sh --check` | Verify the expected tools are on `PATH`, then exit |
-| `./install.sh --help` | Show usage |
-
-Environment override: `CJ_IDE_REPO_URL` (config source for `curl | bash`).
-
 ## Uninstall
 
-`prune.sh` reverses what the installer did. By default it removes **only the
-Neovim side** — the config, plugin/data/cache dirs, and the shell-rc block:
-
 ```bash
-./prune.sh              # remove config + nvim data (asks first)
-./prune.sh --dry-run    # show exactly what would be removed, change nothing
-./prune.sh --backup     # move ~/.config/nvim aside instead of deleting it
+curl -fsSL https://raw.githubusercontent.com/cjgalvisc96/CJ-IDE/main/uninstall.sh | bash
 ```
-
-The mise-managed tools are **kept by default** (other projects may use them).
-To go further:
-
-| Flag | Effect |
-|------|--------|
-| `--tools` | also `mise unuse -g` every tool CJ-IDE installed, then prune them |
-| `--mise` | also uninstall mise entirely (implies `--tools`) — destructive |
-| `--yes` | don't prompt for confirmation |
 
 ## What you get
 
@@ -87,13 +36,9 @@ Markdown.
 - **nvim-lspconfig** — native LSP (`lua_ls`, `basedpyright`, `ruff`, `gopls`, `yamlls`, `jsonls`)
 - **toggleterm** — floating terminal (`<C-\>`)
 
-> The lazygit/lazydocker/lazysql/k9s/lazyjournal launchers were removed — run
-> those tools straight from your shell, outside the IDE.
-
 ## Keybindings
 
 Leader is **Space**. **Forgot a key? Press `?`** for the full cheatsheet
-(`:CJHelp`) — a floating panel listing every binding below.
 
 | Keys | Action |
 |------|--------|
@@ -103,24 +48,8 @@ Leader is **Space**. **Forgot a key? Press `?`** for the full cheatsheet
 | `<leader>e` | File tree (neo-tree, left panel) |
 | `gd` / `gr` | Definition / references |
 | `gk` | Jump back (e.g. after `gd`) |
-| `<leader>cd` | Line diagnostics (float) |
-| `<leader>cr` / `ca` | Rename / code action |
-| `[d` / `]d` | Prev / next diagnostic |
 | `<leader>w` | Save |
 | `<leader>u` | Update plugins (`:Lazy update`) |
-| `<C-\>` | Toggle floating terminal |
-| `<C-x>` (terminal) | Back to normal mode |
-
-### VSCode-style keys
-
-CJ-IDE ships a **VSCode/VSCodeVim-flavored** keymap in `lua/config/user.lua`
-(loaded last, so it's the default). Highlights:
-
-| Keys | Action |
-|------|--------|
-| `<leader>p` / `<leader>f` | Quick-open file / find in files |
-| `<leader>b` | Switch buffer (fuzzy) |
-| `<leader>q` / `<leader>x` | Close buffer / smart-close panel·split·buffer |
 | `<leader>Q` | Quit CJ-IDE |
 | `<leader>n` / `<leader>s` | New file / split editor (vertical) |
 | `<leader>←` / `<leader>→` | Focus split left / right |
@@ -129,10 +58,6 @@ CJ-IDE ships a **VSCode/VSCodeVim-flavored** keymap in `lua/config/user.lua`
 | `<leader>j` / `<leader>k` | Move line/selection down / up |
 | `f` `F` `fa` `fu` | Fold / unfold (recursive / all) |
 | `J` / `K` | Next / previous paragraph |
-
-> These intentionally remap some core Vim keys (`f`, `J`, `K`, `dw`/`df`/`yf`…)
-> to match VSCode muscle memory. Edit `lua/config/user.lua` to change or remove
-> any of them — it's the one file meant for personal taste.
 
 **Autosave:** files write themselves ~1s after you stop changing them (like
 VSCode `files.autoSave: afterDelay`). Configured in `lua/config/user.lua`.

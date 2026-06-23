@@ -10,7 +10,9 @@
 
 local map = vim.keymap.set
 
-vim.o.timeoutlen = 1000 -- vim.timeout: 1000 (waits this long on multi-key seqs)
+-- How long a multi-key sequence waits for the next key. Kept short so the
+-- intentional prefix overlaps (f → fa/fu, gc → gcc) barely pause.
+vim.o.timeoutlen = 400
 
 -- Treesitter-based folding so the f/F fold maps below actually have folds.
 vim.opt.foldmethod = "expr"

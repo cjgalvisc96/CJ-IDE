@@ -55,14 +55,11 @@ return {
             vim.keymap.set("n", l, fn, { buffer = b, desc = d })
           end
           -- Navigation via fzf-lua pickers: a searchable floating list instead
-          -- of dumping results into the quickfix window. Simple g-key scheme:
-          --   gd definition · gr references · gi implementation · gy type · gh hover
-          -- (gb = jump back lives in user.lua). [d / ]d diagnostics are defaults.
+          -- of dumping results into the quickfix window. Minimal g-key scheme:
+          --   gd definition · gr references   (gk = jump back lives in user.lua)
+          -- [d / ]d diagnostics are defaults.
           m("gd", "<cmd>FzfLua lsp_definitions<cr>", "Definition")
           m("gr", "<cmd>FzfLua lsp_references<cr>", "References")
-          m("gi", "<cmd>FzfLua lsp_implementations<cr>", "Implementation")
-          m("gy", "<cmd>FzfLua lsp_typedefs<cr>", "Type definition")
-          m("gh", vim.lsp.buf.hover, "Hover docs")
           m("<leader>cr", vim.lsp.buf.rename, "Rename")
           m("<leader>ca", vim.lsp.buf.code_action, "Code action")
           m("<leader>cd", vim.diagnostic.open_float, "Line diagnostics")

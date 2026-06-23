@@ -14,7 +14,7 @@ local SECTIONS = {
     { "<leader>b", "Switch buffer" },
     { "<leader>f", "Search in current file" },
     { "<leader>F", "Search in project (live grep)" },
-    { "<leader>e", "Explorer — neo-tree (right)" },
+    { "<leader>e", "Explorer — neo-tree (left)" },
     { "<leader>n", "New file (named)" },
     { "<leader>s", "Split editor (vertical)" },
     { "<leader><Left>/<Right>", "Focus split left / right" },
@@ -23,9 +23,7 @@ local SECTIONS = {
   } },
   { "Code · LSP", {
     { "gd / gr", "Definition / references" },
-    { "gi / gy", "Implementation / type definition" },
-    { "gh", "Hover docs" },
-    { "gb", "Jump back" },
+    { "gk", "Jump back" },
     { "<leader>cr / <leader>ca", "Rename / code action" },
     { "<leader>cd", "Line diagnostics (float)" },
     { "[d / ]d", "Prev / next diagnostic" },
@@ -52,6 +50,7 @@ local SECTIONS = {
   { "Help · Misc", {
     { "?  /  :CJHelp", "Show this cheatsheet" },
     { "<Esc>", "Clear search highlight" },
+    { "<leader>u", "Update plugins (:Lazy update)" },
     { ":checkhealth", "Diagnose the setup" },
     { ":Lazy", "Plugin manager" },
   } },

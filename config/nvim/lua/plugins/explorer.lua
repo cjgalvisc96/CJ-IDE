@@ -1,4 +1,4 @@
--- File explorer: neo-tree as a side panel docked on the RIGHT.
+-- File explorer: neo-tree as a side panel docked on the LEFT.
 --
 -- neo-tree uses nvim-web-devicons for file icons + tree glyphs, so a Nerd Font
 -- (https://www.nerdfonts.com) in your terminal makes it look right.
@@ -19,7 +19,7 @@ return {
       close_if_last_window = true,
       sort_case_insensitive = true,
       window = {
-        position = "right", -- dock the tree on the right side
+        position = "left", -- dock the tree on the left side
         width = 34,
       },
       filesystem = {

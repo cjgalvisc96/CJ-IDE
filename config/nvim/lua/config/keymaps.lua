@@ -3,5 +3,6 @@
 local map = vim.keymap.set
 
 map("n", "<leader>w", "<cmd>w<cr>", { desc = "Save" })
+map("n", "<leader>u", "<cmd>Lazy update<cr>", { desc = "Update plugins" })
 map("n", "<Esc>", "<cmd>nohlsearch<cr>", { desc = "Clear search" })
 map("t", "<C-x>", [[<C-\><C-n>]], { desc = "Terminal: normal mode" })

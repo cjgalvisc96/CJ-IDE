@@ -89,7 +89,7 @@ map("x", "<leader>j", ":m '>+1<cr>gv=gv", { desc = "Move selection down" })
 map("x", "<leader>k", ":m '<-2<cr>gv=gv", { desc = "Move selection up" })
 
 -- jump back to where you came from, e.g. after gd (forward is still <C-i>/Tab)
-map("n", "gb", "<C-o>", { desc = "Jump back" })
+map("n", "gk", "<C-o>", { desc = "Jump back" })
 
 -- ── terminal ──────────────────────────────────────────────────────────────
 map("n", "<leader>t", "<cmd>ToggleTerm<cr>", { desc = "New terminal" })

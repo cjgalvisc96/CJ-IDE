@@ -82,7 +82,7 @@ Markdown.
 - **tokyonight** theme + **lualine** statusline (shows the file's absolute path) + **which-key** hints
 - **nvim-treesitter** — syntax-aware highlighting & indentation
 - **fzf-lua** — fuzzy finder (files, grep, symbols, diagnostics) + LSP nav
-- **neo-tree** — file tree as a side panel docked on the right
+- **neo-tree** — file tree as a side panel docked on the left
 - **blink.cmp** — completion + signature help, fed by **schemastore** for JSON/YAML
 - **nvim-lspconfig** — native LSP (`lua_ls`, `basedpyright`, `ruff`, `gopls`, `yamlls`, `jsonls`)
 - **toggleterm** — floating terminal (`<C-\>`)
@@ -100,14 +100,14 @@ Leader is **Space**. **Forgot a key? Press `?`** for the full cheatsheet
 | `?` | Show the keybindings cheatsheet (`:CJHelp`) |
 | `<leader>p` / `<leader>b` | Open file / switch buffer |
 | `<leader>f` / `<leader>F` | Search current file / whole project |
-| `<leader>e` | File tree (neo-tree, right panel) |
-| `gd` / `gr` / `gi` / `gy` | Definition / references / implementation / type def |
-| `gb` | Jump back (e.g. after `gd`) |
-| `gh` | Hover docs |
+| `<leader>e` | File tree (neo-tree, left panel) |
+| `gd` / `gr` | Definition / references |
+| `gk` | Jump back (e.g. after `gd`) |
 | `<leader>cd` | Line diagnostics (float) |
 | `<leader>cr` / `ca` | Rename / code action |
 | `[d` / `]d` | Prev / next diagnostic |
 | `<leader>w` | Save |
+| `<leader>u` | Update plugins (`:Lazy update`) |
 | `<C-\>` | Toggle floating terminal |
 | `<C-x>` (terminal) | Back to normal mode |
 
@@ -152,6 +152,7 @@ path** (with a `●` modified flag). Configured in `lua/plugins/ui.lua` — chan
 
 ```
 install.sh                 one-shot installer (tools via mise + config)
+resync.sh                  re-copy config/nvim -> ~/.config/nvim (iterate on the config)
 prune.sh                   uninstaller (reverses install.sh)
 config/
 ├── mise/tools.txt         the tool manifest — ONE list install.sh & prune.sh read
@@ -165,7 +166,9 @@ config/
 ```
 
 `config/nvim/` is the single source of truth — the installer copies it into
-`~/.config/nvim`. `config/mise/tools.txt` is the single source for which tools
+`~/.config/nvim`. After editing it, run **`./resync.sh`** to push the changes into
+`~/.config/nvim` (mirroring adds/deletes) and restart nvim — no need to re-run
+`install.sh`/`prune.sh`. `config/mise/tools.txt` is the single source for which tools
 get installed; both scripts read it, so they can't drift apart.
 
 ## Reproducibility

@@ -3,7 +3,7 @@
 # install.sh — one-shot setup for CJ-IDE, a custom Neovim IDE.
 #
 # Uses mise (https://mise.jdx.dev) to install almost everything GLOBALLY:
-#   Neovim, Node/Go/Python, ripgrep/fd/fzf, and all LSP servers/formatters.
+#   Neovim, Node/Go/Python, ripgrep/fd/fzf, and all LSP servers.
 # Only build tools (git/curl/compiler) come from the OS package manager.
 # Then it installs the Neovim config from this repo's config/nvim/ into
 # ~/.config/nvim (cloning the repo first if you ran it via `curl | bash`).
@@ -153,7 +153,7 @@ install_tools() {
   # Runtimes first so the go:/npm: backends below can build against them.
   install_section runtimes "runtimes (node, go, python, neovim)"
   install_section cli      "CLI tools (ripgrep, fd, fzf, tree-sitter)"
-  install_section lsp      "LSP servers + formatters"
+  install_section lsp      "LSP servers"
 }
 
 # --- shell rc: activate mise ----------------------------------------------- #

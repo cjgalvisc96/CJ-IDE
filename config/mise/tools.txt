@@ -29,12 +29,9 @@ tree-sitter@0.26
 ruff@0.15
 lua-language-server@3.18
 go:golang.org/x/tools/gopls@0.22
-go:mvdan.cc/gofumpt@0.10
-go:golang.org/x/tools/cmd/goimports@0.46
-# These LSPs/formatters ship only via npm (no prebuilt aqua/ubi backend exists),
-# but npm packages are prebuilt JS — no compilation, so they install fast and
-# reliably. They run on the node@24.17 above.
+# These LSPs ship only via npm (no prebuilt aqua/ubi backend exists), but npm
+# packages are prebuilt JS — no compilation, so they install fast and reliably.
+# They run on the node@24.17 above.
 npm:basedpyright@1.39
 npm:yaml-language-server@1.23
 npm:vscode-langservers-extracted@4.10
-npm:prettier@3.8

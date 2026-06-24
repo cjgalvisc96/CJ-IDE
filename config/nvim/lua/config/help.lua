@@ -23,6 +23,7 @@ local SECTIONS = {
   } },
   { "Code · LSP", {
     { "gd / gr", "Definition / references" },
+    { "gh", "Hover docs (K is paragraph-jump)" },
     { "gk", "Jump back" },
     { "<leader>cr / <leader>ca", "Rename / code action" },
     { "<leader>cd", "Line diagnostics (float)" },

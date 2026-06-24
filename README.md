@@ -47,6 +47,7 @@ Leader is **Space**. **Forgot a key? Press `?`** for the full cheatsheet
 | `<leader>f` / `<leader>F` | Search current file / whole project |
 | `<leader>e` | File tree (nvim-tree, left panel) |
 | `gd` / `gr` | Definition / references |
+| `gh` | Hover docs (`K` is paragraph-jump) |
 | `gk` | Jump back (e.g. after `gd`) |
 | `<leader>w` | Save |
 | `<leader>u` | Update plugins (`:Lazy update`) |

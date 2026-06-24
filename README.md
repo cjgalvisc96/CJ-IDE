@@ -17,7 +17,7 @@ curl -fsSL https://raw.githubusercontent.com/cjgalvisc96/CJ-IDE/main/install.sh 
 ## Uninstall
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/cjgalvisc96/CJ-IDE/main/uninstall.sh | bash
+curl -fsSL https://raw.githubusercontent.com/cjgalvisc96/CJ-IDE/main/prune.sh | bash
 ```
 
 ## What you get

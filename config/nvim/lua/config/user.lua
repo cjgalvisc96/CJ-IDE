@@ -117,8 +117,11 @@ map("n", "F", fold("zO"), { desc = "Unfold recursively" })
 map("n", "fa", fold("zM"), { desc = "Fold all" })
 map("n", "fu", fold("zR"), { desc = "Unfold all" })
 
--- copy the whole file to the system clipboard
-map("n", "vv", "<cmd>%yank +<cr>", { desc = "Copy whole file" })
+-- copy / cut the whole file to the system clipboard. cc shadows change-line.
+-- NOTE: <leader>x empties the buffer, and the autosave above will write that
+-- empty file ~1s later — press u to undo (the content is still on the clipboard).
+map("n", "cc", "<cmd>%yank +<cr>", { desc = "Copy whole file" })
+map("n", "<leader>x", "<cmd>%delete +<cr>", { desc = "Cut whole file to clipboard" })
 
 -- copy the current file's absolute path to the system clipboard
 map("n", "<leader>cp", function()

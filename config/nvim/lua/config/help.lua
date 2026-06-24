@@ -37,7 +37,7 @@ local SECTIONS = {
     { "J / K", "Next / previous paragraph" },
     { "f / F", "Fold / unfold recursively" },
     { "fa / fu", "Fold all / unfold all" },
-    { "vv", "Copy whole file" },
+    { "cc / <leader>x", "Copy / cut whole file to clipboard" },
     { "dw du db df", "Delete word/… → insert / append" },
     { "dp dq dk dc", "Delete inside ()  ''  {}  []" },
     { "yf yu yb", "Yank to end / word / to start" },

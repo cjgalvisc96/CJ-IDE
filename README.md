@@ -31,7 +31,7 @@ Markdown.
 - **tokyonight** theme + **lualine** statusline (shows the file's absolute path) + **which-key** hints
 - **nvim-treesitter** — syntax-aware highlighting & indentation
 - **fzf-lua** — fuzzy finder (files, grep, symbols, diagnostics) + LSP nav
-- **neo-tree** — file tree as a side panel docked on the left
+- **nvim-tree** — file tree as a side panel docked on the left
 - **blink.cmp** — completion + signature help, fed by **schemastore** for JSON/YAML
 - **nvim-lspconfig** — native LSP (`lua_ls`, `basedpyright`, `ruff`, `gopls`, `yamlls`, `jsonls`)
 - **toggleterm** — floating terminal (`<C-\>`)
@@ -45,7 +45,7 @@ Leader is **Space**. **Forgot a key? Press `?`** for the full cheatsheet
 | `?` | Show the keybindings cheatsheet (`:CJHelp`) |
 | `<leader>p` / `<leader>b` | Open file / switch buffer |
 | `<leader>f` / `<leader>F` | Search current file / whole project |
-| `<leader>e` | File tree (neo-tree, left panel) |
+| `<leader>e` | File tree (nvim-tree, left panel) |
 | `gd` / `gr` | Definition / references |
 | `gk` | Jump back (e.g. after `gd`) |
 | `<leader>w` | Save |
@@ -109,7 +109,7 @@ get installed; both scripts read it, so they can't drift apart.
 - The installer pulls minimal build tools (git, curl, a C compiler) from your OS
   package manager; everything else comes from mise.
 - For file-tree icons to render, use a [Nerd Font](https://www.nerdfonts.com)
-  in your terminal (otherwise neo-tree's icons show as missing glyphs).
+  in your terminal (otherwise nvim-tree's icons show as missing glyphs).
 
 ## Contributing
 

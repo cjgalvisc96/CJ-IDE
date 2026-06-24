@@ -25,3 +25,54 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y luarocks && sudo luarocks install luacheck
       - name: luacheck
         run: luacheck config/nvim --globals vim --no-max-line-length
+
+  smoke:
+    name: Smoke-test Neovim config
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # treesitter's main branch compiles parsers locally -> needs a C compiler.
+      - name: Install build deps
+        run: sudo apt-get update && sudo apt-get install -y build-essential git curl
+
+      - name: Install mise
+        run: |
+          curl -fsSL https://mise.run | sh
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+          echo "$HOME/.local/share/mise/shims" >> "$GITHUB_PATH"
+
+      # Use the SAME Neovim + tree-sitter the manifest pins, so CI tests exactly
+      # what users get (no drift between CI and a real install).
+      - name: Install Neovim + tree-sitter (pinned versions from the manifest)
+        run: |
+          nvim_spec=$(grep -E '^neovim@' config/mise/tools.txt)
+          ts_spec=$(grep -E '^tree-sitter@' config/mise/tools.txt)
+          mise use -g "$nvim_spec" "$ts_spec"
+          nvim --version
+
+      - name: Install the config
+        run: cp -r config/nvim "$HOME/.config/nvim"
+
+      # Resolve + install every plugin headlessly. A broken spec or a bad
+      # lazy-lock entry fails here instead of on a user's machine.
+      - name: Plugins resolve & install
+        run: nvim --headless "+Lazy! sync" +qa
+
+      # Launch with the real config; treesitter (lazy=false) and all init code
+      # run. A clean startup writes NOTHING to stderr -- any Lua error does, so
+      # a non-empty stderr fails the build.
+      - name: Config loads without errors
+        run: |
+          nvim --headless "+qa" 2> startup-errors.log || true
+          if [ -s startup-errors.log ]; then
+            echo "::error::Neovim emitted errors on startup:"
+            cat startup-errors.log
+            exit 1
+          fi
+          echo "Clean startup — no errors."
+
+      # checkhealth is informational here (LSP server binaries aren't installed
+      # in this lean job), but the output is handy when a PR regresses health.
+      - name: checkhealth (informational)
+        run: nvim --headless "+checkhealth" "+w! health.txt" "+qa" && cat health.txt || true

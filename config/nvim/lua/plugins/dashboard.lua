@@ -26,7 +26,7 @@ return {
         dashboard.button("r", "  Recent files", "<cmd>FzfLua oldfiles<cr>"),
         dashboard.button("F", "  Find text", "<cmd>FzfLua live_grep<cr>"),
         dashboard.button("n", "  New file", "<cmd>ene | startinsert<cr>"),
-        dashboard.button("e", "  File explorer", "<cmd>Neotree toggle reveal<cr>"),
+        dashboard.button("e", "  File explorer", "<cmd>NvimTreeFindFileToggle<cr>"),
         dashboard.button("?", "  Keybindings", "<cmd>CJHelp<cr>"),
         dashboard.button("u", "  Update plugins", "<cmd>Lazy update<cr>"),
         dashboard.button("q", "  Quit", "<cmd>qa<cr>"),

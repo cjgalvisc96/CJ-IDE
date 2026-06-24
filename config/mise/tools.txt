@@ -7,29 +7,34 @@
 #   * `# [section]` headers group tools; install.sh installs runtimes first
 #     (so the go:/npm: backends below can build)
 #
-# Pin a version for reproducibility by replacing @latest, e.g. `ripgrep@14.1.0`.
-# Neovim is pinned to a major.minor on purpose: an unpinned jump to a new
-# Neovim release is what broke treesitter once already.
+# VERSIONS ARE PINNED TO major.minor for reproducibility: a fresh install on a
+# new machine resolves to the SAME tools, while still picking up patch releases
+# (mise reads `ruff@0.15` as "latest 0.15.x"). To move to a newer feature
+# release, bump the number here deliberately and re-run ./install.sh — never let
+# it float. (An unpinned Neovim jump is what broke treesitter once already.)
 
 # [runtimes]
-node@lts
-go@latest
-python@latest
+node@24.17
+go@1.26
+python@3.14
 neovim@0.12
 
 # [cli]
-ripgrep@latest
-fd@latest
-fzf@latest
-tree-sitter@latest
+ripgrep@15.1
+fd@10.4
+fzf@0.73
+tree-sitter@0.26
 
 # [lsp]
-ruff@latest
-lua-language-server@latest
-go:golang.org/x/tools/gopls@latest
-go:mvdan.cc/gofumpt@latest
-go:golang.org/x/tools/cmd/goimports@latest
-npm:basedpyright@latest
-npm:yaml-language-server@latest
-npm:vscode-langservers-extracted@latest
-npm:prettier@latest
+ruff@0.15
+lua-language-server@3.18
+go:golang.org/x/tools/gopls@0.22
+go:mvdan.cc/gofumpt@0.10
+go:golang.org/x/tools/cmd/goimports@0.46
+# These LSPs/formatters ship only via npm (no prebuilt aqua/ubi backend exists),
+# but npm packages are prebuilt JS — no compilation, so they install fast and
+# reliably. They run on the node@24.17 above.
+npm:basedpyright@1.39
+npm:yaml-language-server@1.23
+npm:vscode-langservers-extracted@4.10
+npm:prettier@3.8

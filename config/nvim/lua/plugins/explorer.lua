@@ -7,11 +7,26 @@ return {
   {
     "nvim-tree/nvim-tree.lua",
     dependencies = { "nvim-tree/nvim-web-devicons" },
-    cmd = { "NvimTreeToggle", "NvimTreeFindFileToggle" },
-    -- <leader>e toggles the tree and reveals the current file (like neo-tree's
-    -- `toggle reveal`).
+    cmd = { "NvimTreeToggle", "NvimTreeFindFileToggle", "NvimTreeFocus" },
+    -- <leader>e is a smart toggle so one key both leaves AND returns to the tree:
+    --   closed              -> open it and reveal the current file
+    --   open, cursor in file -> FOCUS the tree (jump back to it)
+    --   open, cursor in tree -> close it
     keys = {
-      { "<leader>e", "<cmd>NvimTreeFindFileToggle<cr>", desc = "Explorer (tree)" },
+      {
+        "<leader>e",
+        function()
+          local api = require("nvim-tree.api")
+          if not api.tree.is_visible() then
+            api.tree.find_file({ open = true, focus = true })
+          elseif vim.bo.filetype == "NvimTree" then
+            api.tree.close()
+          else
+            api.tree.focus()
+          end
+        end,
+        desc = "Explorer (toggle / focus)",
+      },
     },
     -- nvim-tree wants netrw disabled before it loads, and this must happen at
     -- startup (not on the lazy load), hence init rather than config.
@@ -31,11 +46,20 @@ return {
         enable = true, -- track/reveal the file you're editing
       },
       filters = {
-        dotfiles = false, -- show dotfiles
-        git_ignored = true, -- hide gitignored files
+        dotfiles = false, -- show dotfiles (.env, .github, …)
+        git_ignored = false, -- show gitignored files too (toggle live with I)
       },
       -- filesystem_watchers are on by default, so the tree auto-refreshes on
       -- external changes (no extra config needed).
+      on_attach = function(bufnr)
+        local api = require("nvim-tree.api")
+        api.config.mappings.default_on_attach(bufnr) -- keep all default keys
+        -- Drop S (search_node): it walks the whole tree synchronously and
+        -- freezes the UI on large/gitignored dirs (node_modules, .venv). Use
+        -- <leader>p (fzf files) for fast project-wide search instead. The live
+        -- filter `f` / clear `F` still work inside the tree.
+        pcall(vim.keymap.del, "n", "S", { buffer = bufnr })
+      end,
     },
   },
 }

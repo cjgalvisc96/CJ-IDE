@@ -14,7 +14,7 @@ local SECTIONS = {
     { "<leader>b", "Switch buffer" },
     { "<leader>f", "Search in current file" },
     { "<leader>F", "Search in project (live grep)" },
-    { "<leader>e", "Explorer — nvim-tree (left)" },
+    { "<leader>e", "Explorer — open / focus / close tree (left)" },
     { "<leader>n", "New file (named)" },
     { "<leader>s", "Split editor (vertical)" },
     { "<leader><Left>/<Right>", "Focus split left / right" },

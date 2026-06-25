@@ -11,7 +11,7 @@ local M = {}
 local SECTIONS = {
   { "Files · Buffers · Search", {
     { "<leader>p", "Quick-open file (fuzzy)" },
-    { "<leader>b", "Switch buffer" },
+    { "<leader>b", "Switch buffer (fuzzy)" },
     { "<leader>f", "Search in current file" },
     { "<leader>F", "Search in project (live grep)" },
     { "<leader>g", "Search word/selection (file)" },
@@ -22,6 +22,11 @@ local SECTIONS = {
     { "<leader><Left>/<Right>", "Focus split left / right" },
     { "<leader>q", "Close editor (buffer)" },
     { "<leader>Q", "Quit CJ-IDE" },
+  } },
+  { "Tabs (open files)", {
+    { "<Tab> / <S-Tab>", "Next / previous tab" },
+    { "<leader>s", "Split editor (vertical)" },
+    { "<leader>q", "Close current tab" },
   } },
   { "Code · LSP", {
     { "gd / gr", "Definition / references" },

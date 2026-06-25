@@ -114,6 +114,11 @@ map("n", "<leader>n", function()
     end
   end)
 end, { desc = "New file (named)" })
+-- VSCode-like tabs (one per open file; the bar comes from bufferline). Tab /
+-- Shift-Tab cycle next / previous; close a tab with <leader>q (above). NOTE:
+-- in a terminal Tab == <C-i>, so this overrides the jumplist-forward jump.
+map("n", "<Tab>", "<cmd>BufferLineCycleNext<cr>", { desc = "Next tab" })
+map("n", "<S-Tab>", "<cmd>BufferLineCyclePrev<cr>", { desc = "Previous tab" })
 map("n", "<leader>s", "<cmd>vsplit<cr>", { desc = "Split editor (vertical)" })
 -- Focus splits with <leader> + arrows. Left/right arrows are symmetric and
 -- unambiguous, and leave the home-row keys free for edits.
@@ -130,7 +135,8 @@ map("n", "<leader>k", "<cmd>m .-2<cr>==", { desc = "Move line up" })
 map("x", "<leader>j", ":m '>+1<cr>gv=gv", { desc = "Move selection down" })
 map("x", "<leader>k", ":m '<-2<cr>gv=gv", { desc = "Move selection up" })
 
--- jump back to where you came from, e.g. after gd (forward is still <C-i>/Tab)
+-- jump back to where you came from, e.g. after gd. (Forward-jump <C-i> is not
+-- available — Tab is the next-tab key above, and Tab == <C-i> in a terminal.)
 map("n", "gk", "<C-o>", { desc = "Jump back" })
 
 -- ── terminal ──────────────────────────────────────────────────────────────

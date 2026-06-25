@@ -23,6 +23,27 @@ return {
     },
   },
 
+  -- VSCode-like tabs: one tab per open file (buffer), across the top. Click a
+  -- tab to switch, click its × to close. Navigation keymaps live in user.lua.
+  {
+    "akinsho/bufferline.nvim",
+    event = "VeryLazy",
+    dependencies = { "nvim-tree/nvim-web-devicons" },
+    opts = {
+      options = {
+        mode = "buffers", -- a tab per buffer (not Vim tab-pages)
+        diagnostics = "nvim_lsp", -- error/warning dots on tabs, like VSCode
+        separator_style = "thin",
+        show_buffer_close_icons = true,
+        show_close_icon = false,
+        -- Keep the tab bar clear of the nvim-tree panel (tabs start to its right).
+        offsets = {
+          { filetype = "NvimTree", text = "Explorer", highlight = "Directory", separator = true },
+        },
+      },
+    },
+  },
+
   {
     "folke/which-key.nvim",
     event = "VeryLazy",

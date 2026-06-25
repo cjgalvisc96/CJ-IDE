@@ -40,6 +40,7 @@ local SECTIONS = {
     { "f / F", "Fold / unfold recursively" },
     { "fa / fu", "Fold all / unfold all" },
     { "cc / <leader>x", "Copy / cut whole file to clipboard" },
+    { "<C-j>", "JSON pretty / minify toggle (any file)" },
     { "dw du db df", "Delete word/… → insert / append" },
     { "dp dq dk dc", "Delete inside ()  ''  {}  []" },
     { "yf yu yb", "Yank to end / word / to start" },

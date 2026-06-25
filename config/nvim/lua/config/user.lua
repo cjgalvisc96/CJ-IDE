@@ -81,6 +81,28 @@ map("x", "<leader>g", function()
   require("fzf-lua").grep_curbuf({ search = visual_selection() })
 end, { desc = "Search selection (file)" })
 map("x", "<leader>G", "<cmd>FzfLua grep_visual<cr>", { desc = "Search selection (project)" })
+
+-- ── JSON pretty / minify toggle on <C-j> (any buffer) ──────────────────────
+-- First press pretty-prints; press again to minify. Uses python (always in the
+-- toolset) so there's no extra dependency. The buffer content just has to be
+-- valid JSON — the filetype/extension doesn't matter. Invalid JSON notifies and
+-- the buffer is left untouched. Toggle state = whether the buffer is multi-line.
+map("n", "<C-j>", function()
+  local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+  local input = table.concat(lines, "\n")
+  local minify = #lines > 1 -- already pretty (multi-line) -> minify
+  local cmd = minify
+      and { "python", "-c", "import json,sys; json.dump(json.load(sys.stdin), sys.stdout, separators=(',',':'))" }
+    or { "python", "-m", "json.tool", "--indent", "2" }
+  local out = vim.fn.system(cmd, input)
+  if vim.v.shell_error ~= 0 then
+    vim.notify("Invalid JSON", vim.log.levels.ERROR)
+    return
+  end
+  out = out:gsub("\n$", "")
+  vim.api.nvim_buf_set_lines(0, 0, -1, false, vim.split(out, "\n"))
+  vim.notify(minify and "JSON minified" or "JSON prettified")
+end, { desc = "JSON pretty/minify toggle" })
 map("n", "<leader>p", "<cmd>FzfLua files<cr>", { desc = "Quick open file" })
 map("n", "<leader>n", function()
   -- Prompt for a name (prefilled with the current file's folder), then open it.

@@ -160,6 +160,8 @@ map("n", "fu", fold("zR"), { desc = "Unfold all" })
 -- copy / cut the whole file to the system clipboard. cc shadows change-line.
 -- NOTE: <leader>x empties the buffer, and the autosave above will write that
 -- empty file ~1s later — press u to undo (the content is still on the clipboard).
+-- select the whole file (visual line mode, like VSCode Ctrl-A)
+map("n", "<leader>a", "ggVG", { desc = "Select whole file" })
 map("n", "cc", "<cmd>%yank +<cr>", { desc = "Copy whole file" })
 map("n", "<leader>x", "<cmd>%delete +<cr>", { desc = "Cut whole file to clipboard" })
 

@@ -63,6 +63,11 @@ map("n", "<leader>Q", "<cmd>qa<cr>", { desc = "Quit CJ-IDE" })
 map("n", "<leader>b", "<cmd>FzfLua buffers<cr>", { desc = "Switch buffer" })
 map("n", "<leader>f", "<cmd>FzfLua lgrep_curbuf<cr>", { desc = "Search in current file" })
 map("n", "<leader>F", "<cmd>FzfLua live_grep<cr>", { desc = "Search in project" })
+-- like <leader>f / <leader>F but seeded with the word under the cursor.
+map("n", "<leader>g", function()
+  require("fzf-lua").grep_curbuf({ search = vim.fn.expand("<cword>") })
+end, { desc = "Search word under cursor (file)" })
+map("n", "<leader>G", "<cmd>FzfLua grep_cword<cr>", { desc = "Search word under cursor (project)" })
 map("n", "<leader>p", "<cmd>FzfLua files<cr>", { desc = "Quick open file" })
 map("n", "<leader>n", function()
   -- Prompt for a name (prefilled with the current file's folder), then open it.

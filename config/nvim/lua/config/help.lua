@@ -14,6 +14,8 @@ local SECTIONS = {
     { "<leader>b", "Switch buffer" },
     { "<leader>f", "Search in current file" },
     { "<leader>F", "Search in project (live grep)" },
+    { "<leader>g", "Search word under cursor (file)" },
+    { "<leader>G", "Search word under cursor (project)" },
     { "<leader>e", "Explorer — open / focus / close tree (left)" },
     { "<leader>n", "New file (named)" },
     { "<leader>s", "Split editor (vertical)" },

@@ -68,6 +68,19 @@ map("n", "<leader>g", function()
   require("fzf-lua").grep_curbuf({ search = vim.fn.expand("<cword>") })
 end, { desc = "Search word under cursor (file)" })
 map("n", "<leader>G", "<cmd>FzfLua grep_cword<cr>", { desc = "Search word under cursor (project)" })
+-- visual mode: same two keys, but search the highlighted selection instead.
+-- Yank the selection via the `v` register (restored after) to seed the curbuf grep.
+local function visual_selection()
+  local save, save_type = vim.fn.getreg("v"), vim.fn.getregtype("v")
+  vim.cmd('noautocmd normal! "vy')
+  local text = vim.fn.getreg("v")
+  vim.fn.setreg("v", save, save_type)
+  return (text:gsub("\n", " "))
+end
+map("x", "<leader>g", function()
+  require("fzf-lua").grep_curbuf({ search = visual_selection() })
+end, { desc = "Search selection (file)" })
+map("x", "<leader>G", "<cmd>FzfLua grep_visual<cr>", { desc = "Search selection (project)" })
 map("n", "<leader>p", "<cmd>FzfLua files<cr>", { desc = "Quick open file" })
 map("n", "<leader>n", function()
   -- Prompt for a name (prefilled with the current file's folder), then open it.

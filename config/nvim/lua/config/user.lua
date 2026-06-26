@@ -135,6 +135,12 @@ map("n", "<leader>k", "<cmd>m .-2<cr>==", { desc = "Move line up" })
 map("x", "<leader>j", ":m '>+1<cr>gv=gv", { desc = "Move selection down" })
 map("x", "<leader>k", ":m '<-2<cr>gv=gv", { desc = "Move selection up" })
 
+-- glide through the file a few lines at a time: <C-h> down, <C-l> up. Uses
+-- <C-e>/<C-y> (scroll the viewport, not jump the cursor) so it feels smooth,
+-- not lurchy. h/l are free here — splits are focused with <leader> + arrows.
+map("n", "<C-h>", "5<C-e>", { desc = "Scroll down" })
+map("n", "<C-l>", "5<C-y>", { desc = "Scroll up" })
+
 -- jump back to where you came from, e.g. after gd. (Forward-jump <C-i> is not
 -- available — Tab is the next-tab key above, and Tab == <C-i> in a terminal.)
 map("n", "gk", "<C-o>", { desc = "Jump back" })

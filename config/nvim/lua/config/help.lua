@@ -42,6 +42,7 @@ local SECTIONS = {
     { "<leader>m", "Toggle comment (normal + visual)" },
     { "<leader>j / <leader>k", "Move line/selection down / up" },
     { "J / K", "Next / previous paragraph" },
+    { "<C-h> / <C-l>", "Scroll down / up" },
     { "f / F", "Fold / unfold recursively" },
     { "fa / fu", "Fold all / unfold all" },
     { "<leader>a", "Select whole file" },

@@ -52,12 +52,6 @@ return {
         dotfiles = false, -- show dotfiles (.env, .github, …)
         git_ignored = false, -- show gitignored files too (toggle live with I)
       },
-      live_filter = {
-        -- Prune folders that contain no match, so `*.md` really shows just the
-        -- md files (with the folders leading to them). Filtering acts on the
-        -- currently-loaded tree — expand a folder to filter what's inside it.
-        always_show_folders = false,
-      },
       -- filesystem_watchers are on by default, so the tree auto-refreshes on
       -- external changes (no extra config needed).
       on_attach = function(bufnr)
@@ -69,18 +63,22 @@ return {
         -- filter `f` / clear `F` still work inside the tree.
         pcall(vim.keymap.del, "n", "S", { buffer = bufnr })
 
-        -- <leader>f INSIDE the tree: start nvim-tree's LIVE filter. An input box
-        -- opens and the tree narrows to matching dirs/files as you type — the
-        -- query is a Vim regex on the name (e.g. `md`, or `\.md$` for just
-        -- markdown). <CR> keeps the filter, <Esc> closes the box; the built-in
-        -- `F` (or an empty filter) clears it. Same thing the built-in `f` does —
-        -- this just puts it on your search key too.
+        -- Type-scoped LIVE filtering (logic in config/tree_filter.lua). Filters
+        -- the tree as you type a Vim regex on the name; <CR> keeps it, <Esc>
+        -- closes the input. Press the SAME key again to clear (like F):
+        --   <leader>f  match FILES only (folders show only as the path to a hit)
+        --   <leader>d  match DIRECTORIES only (a matched folder shows its files)
+        --   f          match either type (the built-in-style filter)
+        local tree_filter = require("config.tree_filter")
         vim.keymap.set("n", "<leader>f", function()
-          local explorer = require("nvim-tree.core").get_explorer()
-          if explorer then
-            explorer.live_filter:start_filtering()
-          end
-        end, { buffer = bufnr, desc = "Explorer: live filter as you type (regex)" })
+          tree_filter.toggle("file")
+        end, { buffer = bufnr, desc = "Explorer: live-search files (toggle)" })
+        vim.keymap.set("n", "<leader>d", function()
+          tree_filter.toggle("directory")
+        end, { buffer = bufnr, desc = "Explorer: live-search directories (toggle)" })
+        vim.keymap.set("n", "f", function()
+          tree_filter.toggle("both")
+        end, { buffer = bufnr, desc = "Explorer: live-filter any name (toggle)" })
       end,
     },
   },

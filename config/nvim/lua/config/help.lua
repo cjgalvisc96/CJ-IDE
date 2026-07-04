@@ -20,6 +20,7 @@ local SECTIONS = {
     { "<leader>r (visual)", "Replace selection (project)" },
     { "  in panel: incl=Files Filter", "exclude/regex=Flags (--glob=!**/dir/**)" },
     { "  <space>r / <space>l", "Replace all / just this line (one-by-one)" },
+    { "  <space>c / <leader>q", "Close the replace panel (:q works too)" },
     { "<leader>e", "Explorer — open / focus / close tree (left)" },
     { "<leader>f / f (in tree)", "Live-filter tree as you type — regex on name" },
     { "F (in tree)", "Clear the live filter" },

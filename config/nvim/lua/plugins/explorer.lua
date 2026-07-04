@@ -45,6 +45,13 @@ return {
       renderer = {
         group_empty = true, -- collapse chains of empty folders
       },
+      actions = {
+        -- Folders open expanded by default (see the TreeOpen hook in config
+        -- below). Don't dive into these heavy dirs when expanding everything.
+        expand_all = {
+          exclude = { ".git", "node_modules", ".venv", "target", "dist", "build" },
+        },
+      },
       update_focused_file = {
         enable = true, -- track/reveal the file you're editing
       },
@@ -69,6 +76,8 @@ return {
         --   <leader>f  match FILES only (folders show only as the path to a hit)
         --   <leader>d  match DIRECTORIES only (a matched folder shows its files)
         --   f          match either type (the built-in-style filter)
+        --   <leader>p  static DIRECTORIES-ONLY view: hide files, show the folder
+        --              tree (no typing); press again to bring files back.
         local tree_filter = require("config.tree_filter")
         vim.keymap.set("n", "<leader>f", function()
           tree_filter.toggle("file")
@@ -79,7 +88,37 @@ return {
         vim.keymap.set("n", "f", function()
           tree_filter.toggle("both")
         end, { buffer = bufnr, desc = "Explorer: live-filter any name (toggle)" })
+        vim.keymap.set("n", "<leader>p", function()
+          tree_filter.dirs_only()
+        end, { buffer = bufnr, desc = "Explorer: directories-only view (toggle)" })
+
+        -- Live preview pane: show the file under the cursor (syntax-highlighted,
+        -- in a scratch float so it never spams the tab bar) as you move through
+        -- the tree; close it when focus leaves the tree.
+        local tree_preview = require("config.tree_preview")
+        vim.api.nvim_create_autocmd("CursorMoved", {
+          buffer = bufnr,
+          callback = function()
+            tree_preview.update()
+          end,
+        })
+        vim.api.nvim_create_autocmd({ "BufLeave", "BufWinLeave" }, {
+          buffer = bufnr,
+          callback = function()
+            tree_preview.close()
+          end,
+        })
       end,
     },
+    -- Own the setup call so we can expand every folder each time the tree opens
+    -- (nvim-tree has no "start expanded" option). expand_all honours the
+    -- actions.expand_all.exclude list above, so it skips node_modules/.git/etc.
+    config = function(_, opts)
+      require("nvim-tree").setup(opts)
+      local api = require("nvim-tree.api")
+      api.events.subscribe(api.events.Event.TreeOpen, function()
+        api.tree.expand_all()
+      end)
+    end,
   },
 }

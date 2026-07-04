@@ -43,14 +43,20 @@ end
 -- that already matched (directory mode), so keep everything below it.
 local function mark(node, re, kind, under_match, DirectoryNode)
   local is_dir = node:as(DirectoryNode) ~= nil
-  local match_files = kind ~= "directory"
-  local match_dirs = kind ~= "file"
 
-  local self_match = false
-  if is_dir and match_dirs then
-    self_match = re:match_str(name_of(node)) ~= nil
-  elseif not is_dir and match_files then
-    self_match = re:match_str(name_of(node)) ~= nil
+  local self_match
+  if kind == "dirsonly" then
+    -- no regex: every directory shows, every file hides
+    self_match = is_dir
+  else
+    local match_files = kind ~= "directory"
+    local match_dirs = kind ~= "file"
+    self_match = false
+    if is_dir and match_dirs then
+      self_match = re:match_str(name_of(node)) ~= nil
+    elseif not is_dir and match_files then
+      self_match = re:match_str(name_of(node)) ~= nil
+    end
   end
 
   local child_under = under_match or (kind == "directory" and is_dir and self_match)
@@ -83,6 +89,18 @@ end
 
 -- The replacement for LiveFilter:apply_filter — reads the type from self._cj_kind.
 local function type_aware_apply(self, node_)
+  local kind = self._cj_kind or "both"
+  local DirectoryNode = require("nvim-tree.node.directory")
+
+  -- dirsonly is a static toggle (no live filter text): hide files, show folders.
+  -- Re-applied here on every reload/expand, so the view survives file changes.
+  if kind == "dirsonly" then
+    for _, n in ipairs(self.explorer.nodes or {}) do
+      mark(n, nil, "dirsonly", false, DirectoryNode)
+    end
+    return
+  end
+
   local filter = self.filter
   if not filter or filter == "" then
     unhide(node_ or self.explorer)
@@ -93,8 +111,6 @@ local function type_aware_apply(self, node_)
     unhide(node_ or self.explorer) -- invalid mid-typing: show all until valid
     return
   end
-  local DirectoryNode = require("nvim-tree.node.directory")
-  local kind = self._cj_kind or "both"
   -- Re-filter the whole tree so the "inside a matched dir" context is always
   -- correct, regardless of which subtree nvim-tree handed us.
   for _, n in ipairs(self.explorer.nodes or {}) do
@@ -117,6 +133,27 @@ function M.toggle(kind)
   lf._cj_kind = kind
   lf.apply_filter = type_aware_apply -- per-instance override (idempotent)
   lf:start_filtering()
+end
+
+-- Toggle a directories-only view: hide every file, show just the folder tree.
+-- No input box and no filter line — it's a static view. Press again to restore.
+function M.dirs_only()
+  local explorer = require("nvim-tree.core").get_explorer()
+  if not explorer then
+    return
+  end
+  local lf = explorer.live_filter
+  if lf._cj_kind == "dirsonly" then
+    lf._cj_kind = nil
+    unhide(explorer)
+    explorer.renderer:draw()
+    return
+  end
+  lf.filter = nil -- make sure no live-filter text lingers
+  lf._cj_kind = "dirsonly"
+  lf.apply_filter = type_aware_apply -- per-instance override (idempotent)
+  lf:apply_filter()
+  explorer.renderer:draw()
 end
 
 return M

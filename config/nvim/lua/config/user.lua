@@ -127,6 +127,11 @@ end, { desc = "New file (named)" })
 -- in a terminal Tab == <C-i>, so this overrides the jumplist-forward jump.
 map("n", "<Tab>", "<cmd>BufferLineCycleNext<cr>", { desc = "Next tab" })
 map("n", "<S-Tab>", "<cmd>BufferLineCyclePrev<cr>", { desc = "Previous tab" })
+-- Reorder tabs. bufferline has no click-and-drag, so shove the current tab
+-- left / right with Alt-, / Alt-. instead (mouse still selects on left-click,
+-- closes on right-click).
+map("n", "<A-,>", "<cmd>BufferLineMovePrev<cr>", { desc = "Move tab left" })
+map("n", "<A-.>", "<cmd>BufferLineMoveNext<cr>", { desc = "Move tab right" })
 map("n", "<leader>s", "<cmd>vsplit<cr>", { desc = "Split editor (vertical)" })
 -- Focus splits with <leader> + arrows. Left/right arrows are symmetric and
 -- unambiguous, and leave the home-row keys free for edits.

@@ -1,7 +1,4 @@
--- Project-wide search & REPLACE, VSCode-style (grug-far.nvim).
---
--- fzf-lua stays your fast search *picker* on <leader>f / <leader>F. This is the
--- heavier "find AND replace across files" panel:
+-- Search & REPLACE, VSCode-style (grug-far.nvim). Opens a panel:
 --   <leader>r   replace in the CURRENT FILE   (<leader>r in visual = the selection)
 --   <leader>R   replace across the whole PROJECT
 -- It uses ripgrep (already on PATH via mise), so no extra dependency — and unlike
@@ -18,14 +15,13 @@
 --                   -i                           case-insensitive
 --                   -F                           treat Search as a literal, not regex
 --
--- Replacing (all buffer-local; <localleader> = Space here):
---   <space>r            replace ALL matches
---   <space>l            replace only the match on the CURRENT line (one-by-one)
---   <space>s            sync your inline edits in the results back to the files
+-- Replacing, inside the panel (buffer-local; <localleader> = Space here):
+--   r                   replace ONLY the match under the cursor (one by one)
+--   R                   replace ALL matches
 --   <space>c / <leader>q   close the panel   (:q works too)
 --   <space>Q            send matches to the quickfix list
--- One-by-one, the VSCode way: just delete the result lines you DON'T want before
--- <space>r, or step line to line with <space>l.
+-- Fill Search + Replace, then walk match to match pressing r, or R to do them
+-- all at once.
 
 -- grug-far's close is moved to <leader>q below; keep the old <Space>c closing
 -- too by pointing it at the same action (resolved at keypress, so setup order
@@ -43,6 +39,10 @@ return {
     cmd = "GrugFar",
     opts = {
       keymaps = {
+        -- In-panel replace on r / R (per your request): r applies just the match
+        -- under the cursor (one by one), R applies them all at once.
+        syncLine = { n = "r" },
+        syncLocations = { n = "R" },
         -- Close on <leader>q too — CJ-IDE's universal "close editor". grug-far's
         -- send-to-quickfix defaulted to <localleader>q (= <Space>q = <leader>q)
         -- and swallowed it, so move quickfix to <localleader>Q and put the real

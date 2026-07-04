@@ -10,7 +10,7 @@ local M = {}
 -- { "Section title", { { "keys", "action" }, ... } }
 local SECTIONS = {
   { "Files · Buffers · Search", {
-    { "<leader>p", "Quick-open file (fuzzy)" },
+    { "<leader>p", "Quick-open file — incl. hidden & gitignored" },
     { "<leader>b", "Switch buffer (fuzzy)" },
     { "<leader>f", "Search in current file (visual: selection)" },
     { "<leader>F", "Search in project — live grep (visual: selection)" },

@@ -111,7 +111,14 @@ map("n", "<C-j>", function()
   vim.api.nvim_buf_set_lines(0, 0, -1, false, vim.split(out, "\n"))
   vim.notify(minify and "JSON minified" or "JSON prettified")
 end, { desc = "JSON pretty/minify toggle" })
-map("n", "<leader>p", "<cmd>FzfLua files<cr>", { desc = "Quick open file" })
+-- Quick-open ANY file — including dotfiles and gitignored ones (matches the
+-- tree, which shows them too), still skipping the .git/.jj folders themselves.
+map("n", "<leader>p", function()
+  require("fzf-lua").files({
+    fd_opts = "--color=never --type f --type l --hidden --no-ignore --exclude .git --exclude .jj",
+    rg_opts = '--color=never --files --hidden --no-ignore -g "!.git" -g "!.jj"',
+  })
+end, { desc = "Quick open file (incl. hidden & gitignored)" })
 map("n", "<leader>n", function()
   -- Prompt for a name (prefilled with the current file's folder), then open it.
   -- The file is written to disk on the first :w.

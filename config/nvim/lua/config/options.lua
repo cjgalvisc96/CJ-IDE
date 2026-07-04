@@ -19,6 +19,9 @@ o.scrolloff = 6
 o.updatetime = 250
 o.clipboard = "unnamedplus"
 o.completeopt = "menu,menuone,noselect"
+-- Mouse in all modes — lets you drag the vertical split separator to resize the
+-- file-explorer tree (and any split) with the pointer.
+o.mouse = "a"
 
 vim.diagnostic.config({
   severity_sort = true,

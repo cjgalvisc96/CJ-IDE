@@ -82,6 +82,14 @@ map("x", "<leader>g", function()
 end, { desc = "Search selection (file)" })
 map("x", "<leader>G", "<cmd>FzfLua grep_visual<cr>", { desc = "Search selection (project)" })
 
+-- <leader>f / <leader>F in VISUAL mode search the highlighted characters — the
+-- same file / project scope as their normal-mode search, seeded with the
+-- selection instead of prompting. (Normal-mode f/F are unchanged.)
+map("x", "<leader>f", function()
+  require("fzf-lua").grep_curbuf({ search = visual_selection() })
+end, { desc = "Search selection (file)" })
+map("x", "<leader>F", "<cmd>FzfLua grep_visual<cr>", { desc = "Search selection (project)" })
+
 -- ── JSON pretty / minify toggle on <C-j> (any buffer) ──────────────────────
 -- First press pretty-prints; press again to minify. Uses python (always in the
 -- toolset) so there's no extra dependency. The buffer content just has to be

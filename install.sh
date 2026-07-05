@@ -106,6 +106,25 @@ install_clipboard() {
   ok "Clipboard tool done"
 }
 
+# --- ImageMagick (snacks.image renders images inline; magick converts) ------ #
+install_imagemagick() {
+  if command -v magick >/dev/null 2>&1 || command -v convert >/dev/null 2>&1; then
+    ok "ImageMagick present"; return 0
+  fi
+  info "Installing ImageMagick (inline image rendering in Neovim)..."
+  case "$PM" in
+    mac)
+      if command -v brew >/dev/null 2>&1; then brew install imagemagick || true
+      else warn "No Homebrew — install ImageMagick manually for image rendering."; fi
+      ;;
+    apt)    $SUDO apt-get install -y imagemagick || true ;;
+    dnf)    $SUDO dnf install -y ImageMagick || true ;;
+    pacman) $SUDO pacman -S --needed --noconfirm imagemagick || true ;;
+    zypper) $SUDO zypper install -y ImageMagick || true ;;
+  esac
+  ok "ImageMagick done"
+}
+
 # --- mise ------------------------------------------------------------------ #
 MISE_BIN=""
 install_mise() {
@@ -256,6 +275,7 @@ main() {
   resolve_repo_root
   install_build_tools
   install_clipboard
+  install_imagemagick
   install_mise
   install_tools
   ensure_shell_rc

@@ -4,6 +4,11 @@
 -- Rendering is ON automatically when you open a *.md file. Toggle it off/on
 -- with <leader>md to drop back to the raw text (e.g. to copy exact markup).
 return {
+  -- The extra also ships markdown-preview.nvim (browser preview) bound to
+  -- <leader>cp — that shadows CJ-IDE's "copy file path" in markdown buffers.
+  -- Drop it: render-markdown below IS the CJ-IDE markdown preview.
+  { "iamcco/markdown-preview.nvim", enabled = false },
+
   {
     "MeanderingProgrammer/render-markdown.nvim",
     opts = {

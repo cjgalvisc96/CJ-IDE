@@ -145,10 +145,46 @@ map("n", "<S-Tab>", "<cmd>BufferLineCyclePrev<cr>", { desc = "Previous tab" })
 map("n", "<A-,>", "<cmd>BufferLineMovePrev<cr>", { desc = "Move tab left" })
 map("n", "<A-.>", "<cmd>BufferLineMoveNext<cr>", { desc = "Move tab right" })
 map("n", "<leader>s", "<cmd>vsplit<cr>", { desc = "Split editor (vertical)" })
--- Focus splits with <leader> + arrows. Left/right arrows are symmetric and
--- unambiguous, and leave the home-row keys free for edits.
-map("n", "<leader><Left>", "<C-w>h", { desc = "Focus split on the left" })
-map("n", "<leader><Right>", "<C-w>l", { desc = "Focus split on the right" })
+-- Focus splits with <leader> + arrows. Left/Right walk the editor splits in
+-- screen order and WRAP at the edges, so two keys always reach every split.
+-- The nvim-tree panel and floating windows are skipped — the tree has its own
+-- key (<leader>e). Up/Down focus the split above/below (horizontal splits).
+local function cycle_split(step)
+  local wins = {}
+  for _, w in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
+    local is_float = vim.api.nvim_win_get_config(w).relative ~= ""
+    if not is_float and vim.bo[vim.api.nvim_win_get_buf(w)].filetype ~= "NvimTree" then
+      table.insert(wins, w)
+    end
+  end
+  if #wins == 0 then
+    return
+  end
+  -- left-to-right, then top-to-bottom (screen order)
+  table.sort(wins, function(a, b)
+    local pa, pb = vim.api.nvim_win_get_position(a), vim.api.nvim_win_get_position(b)
+    if pa[2] ~= pb[2] then
+      return pa[2] < pb[2]
+    end
+    return pa[1] < pb[1]
+  end)
+  local cur = vim.api.nvim_get_current_win()
+  for i, w in ipairs(wins) do
+    if w == cur then
+      vim.api.nvim_set_current_win(wins[(i - 1 + step) % #wins + 1])
+      return
+    end
+  end
+  vim.api.nvim_set_current_win(wins[1]) -- cursor was in the tree/a float
+end
+map("n", "<leader><Left>", function()
+  cycle_split(-1)
+end, { desc = "Focus previous split (wraps)" })
+map("n", "<leader><Right>", function()
+  cycle_split(1)
+end, { desc = "Focus next split (wraps)" })
+map("n", "<leader><Up>", "<C-w>k", { desc = "Focus split above" })
+map("n", "<leader><Down>", "<C-w>j", { desc = "Focus split below" })
 
 -- comments (built-in gc; remap=true so the gcc/gc operator runs)
 map("n", "<leader>m", "gcc", { remap = true, desc = "Comment line" })

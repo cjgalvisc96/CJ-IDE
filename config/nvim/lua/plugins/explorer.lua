@@ -46,8 +46,8 @@ return {
         group_empty = true, -- collapse chains of empty folders
       },
       actions = {
-        -- Folders open expanded by default (see the TreeOpen hook in config
-        -- below). Don't dive into these heavy dirs when expanding everything.
+        -- Folders start COLLAPSED; expand everything on demand with `E` inside
+        -- the tree. Don't dive into these heavy dirs when expanding all.
         expand_all = {
           exclude = { ".git", "node_modules", ".venv", "target", "dist", "build" },
         },
@@ -93,15 +93,5 @@ return {
         end, { buffer = bufnr, desc = "Explorer: directories-only view (toggle)" })
       end,
     },
-    -- Own the setup call so we can expand every folder each time the tree opens
-    -- (nvim-tree has no "start expanded" option). expand_all honours the
-    -- actions.expand_all.exclude list above, so it skips node_modules/.git/etc.
-    config = function(_, opts)
-      require("nvim-tree").setup(opts)
-      local api = require("nvim-tree.api")
-      api.events.subscribe(api.events.Event.TreeOpen, function()
-        api.tree.expand_all()
-      end)
-    end,
   },
 }

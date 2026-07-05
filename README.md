@@ -61,7 +61,8 @@ Leader is **Space**. **Forgot a key? Press `?`** for the full cheatsheet
 | `<leader>u` | Update plugins (`:Lazy update`) |
 | `<leader>Q` | Quit CJ-IDE |
 | `<leader>n` / `<leader>s` | New file / split editor (vertical) |
-| `<leader>←` / `<leader>→` | Focus split left / right |
+| `<leader>←` / `<leader>→` | Prev / next split (wraps around; skips the tree) |
+| `<leader>↑` / `<leader>↓` | Focus split above / below |
 | `<leader>t` | New terminal |
 | `<leader>m` | Toggle comment (normal + visual) |
 | `<leader>j` / `<leader>k` | Move line/selection down / up |

@@ -5,6 +5,12 @@ return {
   { "mason-org/mason.nvim", enabled = false },
   { "mason-org/mason-lspconfig.nvim", enabled = false },
 
+  -- NO neo-tree: selected as LazyVim's "explorer" (vim.g.lazyvim_explorer in
+  -- config/options.lua) purely so LazyVim doesn't force-enable snacks_explorer
+  -- (whose <leader>e would race with nvim-tree's). The plugin itself is off —
+  -- CJ-IDE's explorer is nvim-tree (plugins/explorer.lua).
+  { "nvim-neo-tree/neo-tree.nvim", enabled = false },
+
   -- Keep stock f/F/t/T char motions in visual/operator mode: CJ-IDE remaps
   -- normal-mode f/F to fold/unfold (user.lua), and flash's labeled char jumps
   -- would fight that muscle memory. flash's s/S jump/treesitter stay.

@@ -16,6 +16,14 @@ vim.g.lazyvim_python_ruff = "ruff"
 -- choice explicit so LazyVim never auto-picks another backend).
 vim.g.lazyvim_picker = "fzf"
 
+-- Explorer: CJ-IDE uses nvim-tree, which LazyVim doesn't know about — and
+-- LazyVim ALWAYS force-enables one of its own explorer extras (snacks or
+-- neo-tree; there is no "none"). Left on auto it picks snacks_explorer, whose
+-- <leader>e would race with ours. So: declare neo-tree here and disable the
+-- neo-tree PLUGIN in plugins/core.lua — its keymaps live on the plugin spec,
+-- so disabling the plugin removes them entirely. Net effect: no competitor.
+vim.g.lazyvim_explorer = "neo-tree"
+
 local o = vim.opt
 o.shiftwidth = 4 -- LazyVim defaults to 2; CJ-IDE keeps 4 (yaml/json/lua → 2 via autocmds)
 o.tabstop = 4

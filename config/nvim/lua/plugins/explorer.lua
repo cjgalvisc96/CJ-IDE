@@ -8,26 +8,9 @@ return {
     "nvim-tree/nvim-tree.lua",
     dependencies = { "nvim-tree/nvim-web-devicons" },
     cmd = { "NvimTreeToggle", "NvimTreeFindFileToggle", "NvimTreeFocus" },
-    -- <leader>e is a smart toggle so one key both leaves AND returns to the tree:
-    --   closed              -> open it and reveal the current file
-    --   open, cursor in file -> FOCUS the tree (jump back to it)
-    --   open, cursor in tree -> close it
-    keys = {
-      {
-        "<leader>e",
-        function()
-          local api = require("nvim-tree.api")
-          if not api.tree.is_visible() then
-            api.tree.find_file({ open = true, focus = true })
-          elseif vim.bo.filetype == "NvimTree" then
-            api.tree.close()
-          else
-            api.tree.focus()
-          end
-        end,
-        desc = "Explorer (toggle / focus)",
-      },
-    },
+    -- The <leader>e smart toggle lives in config/user.lua (set after every
+    -- plugin key stub, so nothing can race it); requiring nvim-tree.api there
+    -- lazy-loads this plugin on first use.
     -- nvim-tree wants netrw disabled before it loads, and this must happen at
     -- startup (not on the lazy load), hence init rather than config.
     init = function()
@@ -69,6 +52,26 @@ return {
         -- <leader>p (fzf files) for fast project-wide search instead. The live
         -- filter `f` / clear `F` still work inside the tree.
         pcall(vim.keymap.del, "n", "S", { buffer = bufnr })
+
+        -- VSCode-style ARROWS inside the tree (buffer-local, so they shadow
+        -- the global "arrows move between splits" maps from user.lua — those
+        -- would otherwise throw you OUT of the tree mid-navigation):
+        --   Up/Down  move the selection    Right  expand folder / open file
+        --   Left     collapse folder (or jump to the parent and close it)
+        vim.keymap.set("n", "<Down>", "j", { buffer = bufnr, desc = "Explorer: next entry" })
+        vim.keymap.set("n", "<Up>", "k", { buffer = bufnr, desc = "Explorer: previous entry" })
+        vim.keymap.set(
+          "n",
+          "<Right>",
+          api.node.open.edit,
+          { buffer = bufnr, desc = "Explorer: expand / open" }
+        )
+        vim.keymap.set(
+          "n",
+          "<Left>",
+          api.node.navigate.parent_close,
+          { buffer = bufnr, desc = "Explorer: collapse" }
+        )
 
         -- Type-scoped LIVE filtering (logic in config/tree_filter.lua). Filters
         -- the tree as you type a Vim regex on the name; <CR> keeps it, <Esc>

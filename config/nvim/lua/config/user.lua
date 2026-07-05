@@ -124,6 +124,23 @@ map("n", "<leader>p", function()
     rg_opts = '--color=never --files --hidden --no-ignore -g "!.git" -g "!.jj"',
   })
 end, { desc = "Quick open file (incl. hidden & gitignored)" })
+-- Explorer smart toggle (nvim-tree) — one key both leaves AND returns:
+--   closed               -> open it and reveal the current file
+--   open, cursor in file -> FOCUS the tree (jump to it)
+--   open, cursor in tree -> close it
+-- Lives HERE (not on the plugin spec) so it always wins <leader>e: LazyVim
+-- force-enables a default explorer extra whose own <leader>e stub would
+-- otherwise race with a spec-level one (see plugins/core.lua).
+map("n", "<leader>e", function()
+  local api = require("nvim-tree.api") -- lazy-loads nvim-tree on first use
+  if not api.tree.is_visible() then
+    api.tree.find_file({ open = true, focus = true })
+  elseif vim.bo.filetype == "NvimTree" then
+    api.tree.close()
+  else
+    api.tree.focus()
+  end
+end, { desc = "Explorer (toggle / focus)" })
 map("n", "<leader>n", function()
   -- Prompt for a name (prefilled with the current file's folder), then open it.
   -- The file is written to disk on the first :w.
@@ -145,10 +162,12 @@ map("n", "<S-Tab>", "<cmd>BufferLineCyclePrev<cr>", { desc = "Previous tab" })
 map("n", "<A-,>", "<cmd>BufferLineMovePrev<cr>", { desc = "Move tab left" })
 map("n", "<A-.>", "<cmd>BufferLineMoveNext<cr>", { desc = "Move tab right" })
 map("n", "<leader>s", "<cmd>vsplit<cr>", { desc = "Split editor (vertical)" })
--- Focus splits with <leader> + arrows. Left/Right walk the editor splits in
+-- Focus splits with the PLAIN arrow keys (normal mode only — in-file movement
+-- is h/j/k/l, so the arrows are free). Left/Right walk the editor splits in
 -- screen order and WRAP at the edges, so two keys always reach every split.
 -- The nvim-tree panel and floating windows are skipped — the tree has its own
 -- key (<leader>e). Up/Down focus the split above/below (horizontal splits).
+-- Insert-mode arrows still move the cursor.
 local function cycle_split(step)
   local wins = {}
   for _, w in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
@@ -177,14 +196,14 @@ local function cycle_split(step)
   end
   vim.api.nvim_set_current_win(wins[1]) -- cursor was in the tree/a float
 end
-map("n", "<leader><Left>", function()
+map("n", "<Left>", function()
   cycle_split(-1)
 end, { desc = "Focus previous split (wraps)" })
-map("n", "<leader><Right>", function()
+map("n", "<Right>", function()
   cycle_split(1)
 end, { desc = "Focus next split (wraps)" })
-map("n", "<leader><Up>", "<C-w>k", { desc = "Focus split above" })
-map("n", "<leader><Down>", "<C-w>j", { desc = "Focus split below" })
+map("n", "<Up>", "<C-w>k", { desc = "Focus split above" })
+map("n", "<Down>", "<C-w>j", { desc = "Focus split below" })
 
 -- comments (built-in gc; remap=true so the gcc/gc operator runs)
 map("n", "<leader>m", "gcc", { remap = true, desc = "Comment line" })

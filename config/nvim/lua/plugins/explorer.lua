@@ -91,23 +91,6 @@ return {
         vim.keymap.set("n", "<leader>p", function()
           tree_filter.dirs_only()
         end, { buffer = bufnr, desc = "Explorer: directories-only view (toggle)" })
-
-        -- Live preview pane: show the file under the cursor (syntax-highlighted,
-        -- in a scratch float so it never spams the tab bar) as you move through
-        -- the tree; close it when focus leaves the tree.
-        local tree_preview = require("config.tree_preview")
-        vim.api.nvim_create_autocmd("CursorMoved", {
-          buffer = bufnr,
-          callback = function()
-            tree_preview.update()
-          end,
-        })
-        vim.api.nvim_create_autocmd({ "BufLeave", "BufWinLeave" }, {
-          buffer = bufnr,
-          callback = function()
-            tree_preview.close()
-          end,
-        })
       end,
     },
     -- Own the setup call so we can expand every folder each time the tree opens

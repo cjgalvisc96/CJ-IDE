@@ -25,7 +25,6 @@ local SECTIONS = {
     { "<leader>f (in tree)", "Live-search FILES; press again to clear" },
     { "<leader>d (in tree)", "Live-search DIRECTORIES; press again to clear" },
     { "<leader>p (in tree)", "Directories-only view (hide files); toggle" },
-    { "(in tree, on a file)", "Auto-preview pane of the file under the cursor" },
     { "f / F (in tree)", "Live-filter any name (toggle) / clear" },
     { "<leader>n", "New file (named)" },
     { "<leader>s", "Split editor (vertical)" },

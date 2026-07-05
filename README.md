@@ -66,7 +66,7 @@ Leader is **Space**. **Forgot a key? Press `?`** for the full cheatsheet
 | `<leader>t` | New terminal |
 | `<leader>m` | Toggle comment (normal + visual) |
 | `<leader>j` / `<leader>k` | Move line/selection down / up |
-| `f` `F` `fa` `fu` | Fold / unfold (recursive / all) |
+| `f` / `fa` | Toggle fold under cursor / toggle all folds |
 | `J` / `K` | Next / previous paragraph |
 
 **Autosave:** files write themselves ~1s after you stop changing them (like

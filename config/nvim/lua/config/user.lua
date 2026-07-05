@@ -4,7 +4,7 @@
 --
 -- HEADS UP: some of these intentionally shadow core Vim keys to preserve the
 -- VSCode muscle memory:
---   f / F  -> fold / unfold (instead of find-char)
+--   f / fa -> toggle fold / toggle all folds (f is no longer find-char)
 --   J / K  -> next / prev paragraph (instead of join-lines / LSP hover)
 --   dw df … / yf yu … -> "change/yank word/line/block" style operators
 -- Forking CJ-IDE and want stock Vim motions back? Delete the marked sections.
@@ -234,20 +234,28 @@ map("n", "<leader>t", "<cmd>ToggleTerm<cr>", { desc = "New terminal" })
 map("n", "J", "}", { desc = "Next paragraph" })
 map("n", "K", "{", { desc = "Previous paragraph" })
 
--- folding: f fold / F unfold (recursively under cursor), fa fold all / fu unfold
--- all. (`f` waits briefly for a/u — that's the fa/fu prefix; raise/lower with
+-- folding, smart toggles:
+--   f   toggle the fold under the cursor (recursively): folded -> unfold,
+--       unfolded -> fold
+--   fa  toggle ALL folds: any closed fold in the file -> open all, else close all
+-- (`f` waits briefly for the `a` — that's the fa prefix; raise/lower with
 -- timeoutlen above.) pcall hides the harmless "no fold here" error.
-local function fold(keys)
-  return function()
-    pcall(function()
-      vim.cmd("normal! " .. keys)
-    end)
+-- F / fu are free again (stock F = find char backwards).
+map("n", "f", function()
+  pcall(function()
+    vim.cmd("normal! zA")
+  end)
+end, { desc = "Toggle fold (recursive)" })
+map("n", "fa", function()
+  local any_closed = false
+  for l = 1, vim.fn.line("$") do
+    if vim.fn.foldclosed(l) ~= -1 then
+      any_closed = true
+      break
+    end
   end
-end
-map("n", "f", fold("zC"), { desc = "Fold recursively" })
-map("n", "F", fold("zO"), { desc = "Unfold recursively" })
-map("n", "fa", fold("zM"), { desc = "Fold all" })
-map("n", "fu", fold("zR"), { desc = "Unfold all" })
+  vim.cmd("normal! " .. (any_closed and "zR" or "zM"))
+end, { desc = "Toggle all folds" })
 
 -- copy / cut the whole file to the system clipboard. cc shadows change-line.
 -- NOTE: <leader>x empties the buffer, and the autosave above will write that

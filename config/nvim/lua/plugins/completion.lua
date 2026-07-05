@@ -1,15 +1,12 @@
--- Completion engine (blink.cmp) + JSON/YAML schema catalog.
+-- Completion — blink.cmp is LazyVim's default engine; keep the CJ-IDE feel:
+-- the stock "default" keymap preset (<C-y> accept, <C-n>/<C-p> select) and
+-- signature help while typing arguments.
 return {
   {
     "saghen/blink.cmp",
-    version = "1.*",
-    event = "InsertEnter",
     opts = {
       keymap = { preset = "default" },
-      sources = { default = { "lsp", "path", "snippets", "buffer" } },
       signature = { enabled = true },
     },
   },
-
-  { "b0o/schemastore.nvim", lazy = true },
 }

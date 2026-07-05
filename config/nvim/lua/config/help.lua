@@ -9,73 +9,91 @@ local M = {}
 
 -- { "Section title", { { "keys", "action" }, ... } }
 local SECTIONS = {
-  { "Files · Buffers · Search", {
-    { "<leader>p", "Quick-open file — incl. hidden & gitignored" },
-    { "<leader>b", "Switch buffer (fuzzy)" },
-    { "<leader>f", "Search in current file (visual: selection)" },
-    { "<leader>F", "Search in project — live grep (visual: selection)" },
-    { "<leader>g", "Search word/selection (file)" },
-    { "<leader>G", "Search word/selection (project)" },
-    { "<leader>r / <leader>R", "Replace panel — current file / project" },
-    { "<leader>r (visual)", "Replace panel seeded with the selection" },
-    { "  r / R (in panel)", "Replace this match (one by one) / all" },
-    { "  incl=Files Filter", "exclude/regex=Flags (--glob=!**/dir/**)" },
-    { "  <space>c / <leader>q", "Close the replace panel (:q works too)" },
-    { "<leader>e", "Explorer — open / focus / close tree (left)" },
-    { "<leader>f (in tree)", "Live-search FILES; press again to clear" },
-    { "<leader>d (in tree)", "Live-search DIRECTORIES; press again to clear" },
-    { "<leader>p (in tree)", "Directories-only view (hide files); toggle" },
-    { "f / F (in tree)", "Live-filter any name (toggle) / clear" },
-    { "<leader>n", "New file (named)" },
-    { "<leader>s", "Split editor (vertical)" },
-    { "<leader><Left>/<Right>", "Focus split left / right" },
-    { "<leader>q", "Close editor (buffer)" },
-    { "<leader>Q", "Quit CJ-IDE" },
-  } },
-  { "Tabs (open files)", {
-    { "<Tab> / <S-Tab>", "Next / previous tab" },
-    { "<A-,> / <A-.>", "Move current tab left / right" },
-    { "<leader>s", "Split editor (vertical)" },
-    { "<leader>q", "Close current tab" },
-  } },
-  { "Code · LSP", {
-    { "gd / gr", "Definition / references" },
-    { "gh", "Hover docs (K is paragraph-jump)" },
-    { "gk", "Jump back" },
-    { "<leader>cr / <leader>ca", "Rename / code action" },
-    { "<leader>cd", "Line diagnostics (float)" },
-    { "[d / ]d", "Prev / next diagnostic" },
-    { "<leader>cp", "Copy file's absolute path" },
-  } },
-  { "Edit · Motion", {
-    { "<leader>w", "Save" },
-    { "<leader>m", "Toggle comment (normal + visual)" },
-    { "<leader>j / <leader>k", "Move line/selection down / up" },
-    { "J / K", "Next / previous paragraph" },
-    { "<C-h> / <C-l>", "Scroll down / up" },
-    { "f / F", "Fold / unfold recursively" },
-    { "fa / fu", "Fold all / unfold all" },
-    { "<leader>a", "Select whole file" },
-    { "cc / <leader>x", "Copy / cut whole file to clipboard" },
-    { "<C-j>", "JSON pretty / minify toggle (any file)" },
-    { "<leader>md", "Markdown pretty view toggle (*.md)" },
-    { "dw du db df", "Delete word/… → insert / append" },
-    { "dp dq dk dc", "Delete inside ()  ''  {}  []" },
-    { "yf yu yb", "Yank to end / word / to start" },
-    { "yp yq yk yc", "Yank inside ()  ''  {}  []" },
-  } },
-  { "Terminal", {
-    { "<C-\\>", "Toggle floating terminal" },
-    { "<leader>t", "New terminal" },
-    { "<C-x>", "Terminal → normal mode" },
-  } },
-  { "Help · Misc", {
-    { "?  /  :CJHelp", "Show this cheatsheet" },
-    { "<Esc>", "Clear search highlight" },
-    { "<leader>u", "Update plugins (:Lazy update)" },
-    { ":checkhealth", "Diagnose the setup" },
-    { ":Lazy", "Plugin manager" },
-  } },
+  {
+    "Files · Buffers · Search",
+    {
+      { "<leader>p", "Quick-open file — incl. hidden & gitignored" },
+      { "<leader>b", "Switch buffer (fuzzy)" },
+      { "<leader>f", "Search in current file (visual: selection)" },
+      { "<leader>F", "Search in project — live grep (visual: selection)" },
+      { "<leader>g", "Search word/selection (file)" },
+      { "<leader>G", "Search word/selection (project)" },
+      { "<leader>r / <leader>R", "Replace panel — current file / project" },
+      { "<leader>r (visual)", "Replace panel seeded with the selection" },
+      { "  r / R (in panel)", "Replace this match (one by one) / all" },
+      { "  incl=Files Filter", "exclude/regex=Flags (--glob=!**/dir/**)" },
+      { "  <space>c / <leader>q", "Close the replace panel (:q works too)" },
+      { "<leader>e", "Explorer — open / focus / close tree (left)" },
+      { "<leader>f (in tree)", "Live-search FILES; press again to clear" },
+      { "<leader>d (in tree)", "Live-search DIRECTORIES; press again to clear" },
+      { "<leader>p (in tree)", "Directories-only view (hide files); toggle" },
+      { "f / F (in tree)", "Live-filter any name (toggle) / clear" },
+      { "<leader>n", "New file (named)" },
+      { "<leader>s", "Split editor (vertical)" },
+      { "<leader><Left>/<Right>", "Focus split left / right" },
+      { "<leader>q", "Close editor (buffer)" },
+      { "<leader>Q", "Quit CJ-IDE" },
+    },
+  },
+  {
+    "Tabs (open files)",
+    {
+      { "<Tab> / <S-Tab>", "Next / previous tab" },
+      { "<A-,> / <A-.>", "Move current tab left / right" },
+      { "<leader>s", "Split editor (vertical)" },
+      { "<leader>q", "Close current tab" },
+    },
+  },
+  {
+    "Code · LSP",
+    {
+      { "gd / gr", "Definition / references" },
+      { "gh", "Hover docs (K is paragraph-jump)" },
+      { "gk", "Jump back" },
+      { "<leader>cr / <leader>ca", "Rename / code action" },
+      { "<leader>cd", "Line diagnostics (float)" },
+      { "[d / ]d", "Prev / next diagnostic" },
+      { "<leader>cp", "Copy file's absolute path" },
+    },
+  },
+  {
+    "Edit · Motion",
+    {
+      { "<leader>w", "Save" },
+      { "<leader>m", "Toggle comment (normal + visual)" },
+      { "<leader>j / <leader>k", "Move line/selection down / up" },
+      { "J / K", "Next / previous paragraph" },
+      { "<C-h> / <C-l>", "Scroll down / up" },
+      { "f / F", "Fold / unfold recursively" },
+      { "fa / fu", "Fold all / unfold all" },
+      { "<leader>a", "Select whole file" },
+      { "cc / <leader>x", "Copy / cut whole file to clipboard" },
+      { "<C-j>", "JSON pretty / minify toggle (any file)" },
+      { "<leader>md", "Markdown pretty view toggle (*.md)" },
+      { "dw du db df", "Delete word/… → insert / append" },
+      { "dp dq dk dc", "Delete inside ()  ''  {}  []" },
+      { "yf yu yb", "Yank to end / word / to start" },
+      { "yp yq yk yc", "Yank inside ()  ''  {}  []" },
+    },
+  },
+  {
+    "Terminal",
+    {
+      { "<C-\\>", "Toggle floating terminal" },
+      { "<leader>t", "New terminal" },
+      { "<C-x>", "Terminal → normal mode" },
+    },
+  },
+  {
+    "Help · Misc",
+    {
+      { "?  /  :CJHelp", "Show this cheatsheet" },
+      { "<Esc>", "Clear search highlight" },
+      { "<leader>u", "Update plugins (:Lazy update)" },
+      { ":checkhealth", "Diagnose the setup" },
+      { ":Lazy", "Plugin manager" },
+    },
+  },
 }
 
 -- Render the sections into aligned text lines.
@@ -95,7 +113,7 @@ local function build_lines()
     end
     table.insert(lines, "")
   end
-  table.insert(lines, "  q / <Esc> / ? to close")
+  table.insert(lines, "  q / <Esc> / ? / <leader>q to close")
   return lines
 end
 
@@ -130,8 +148,9 @@ function M.open()
   vim.wo[win].cursorline = true
   vim.wo[win].wrap = false
 
-  -- q / <Esc> / ? all close the cheatsheet (buffer-local, so `?` toggles).
-  for _, key in ipairs({ "q", "<Esc>", "?" }) do
+  -- q / <Esc> / ? / <leader>q all close the cheatsheet (buffer-local, so `?`
+  -- toggles and <leader>q behaves like CJ-IDE's universal "close editor").
+  for _, key in ipairs({ "q", "<Esc>", "?", "<leader>q" }) do
     vim.keymap.set("n", key, function()
       if vim.api.nvim_win_is_valid(win) then
         vim.api.nvim_win_close(win, true)

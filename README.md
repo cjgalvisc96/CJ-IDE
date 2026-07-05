@@ -25,16 +25,24 @@ curl -fsSL https://raw.githubusercontent.com/cjgalvisc96/CJ-IDE/main/prune.sh | 
 **Languages out of the box:** Python, Go, YAML, JSON, Lua, Bash, Dockerfile,
 Markdown.
 
-**Plugins** (managed by [lazy.nvim](https://github.com/folke/lazy.nvim)):
+**Base: [LazyVim](https://lazyvim.org)** — CJ-IDE is a thin layer on top of the
+LazyVim distribution, which owns the plumbing (plugin defaults, LSP wiring,
+treesitter, UI polish). CJ-IDE keeps its own keymaps, look and toolchain:
 
-- **alpha-nvim** — CJ-IDE start screen / homepage on launch
-- **tokyonight** theme + **lualine** statusline (shows the file's absolute path) + **which-key** hints
-- **nvim-treesitter** — syntax-aware highlighting & indentation
+- **LazyVim core** — tokyonight theme, **lualine** statusline (shows the file's
+  absolute path), **bufferline** tabs, **which-key** hints, **blink.cmp**
+  completion + signature help, treesitter (`main` branch), gitsigns, flash,
+  trouble, noice, snacks (dashboard shows the CJ-IDE banner)
 - **fzf-lua** — fuzzy finder (files, grep, symbols, diagnostics) + LSP nav
-- **nvim-tree** — file tree as a side panel docked on the left
-- **blink.cmp** — completion + signature help, fed by **schemastore** for JSON/YAML
-- **nvim-lspconfig** — native LSP (`lua_ls`, `basedpyright`, `ruff`, `gopls`, `yamlls`, `jsonls`)
+  (LazyVim `editor.fzf` extra)
+- **Language extras** — python (basedpyright + ruff), go, json/yaml (with
+  schemastore), docker, markdown (render-markdown pretty view)
+- **nvim-tree** — file tree side panel (kept over LazyVim's default explorer)
 - **toggleterm** — floating terminal (`<C-\>`)
+- **No mason** — LSP servers & formatters come from mise on your `PATH`
+  (`config/mise/tools.txt`), same as always
+- Format-on-save is **off** (CJ-IDE autosaves instead); format manually with
+  `<leader>cf`
 
 ## Keybindings
 
@@ -68,7 +76,13 @@ path** (with a `●` modified flag). Configured in `lua/plugins/ui.lua` — chan
 `path = 2` to `1` (relative) or `4` (name only).
 
 **Homepage:** launching `nvim` with no file opens the CJ-IDE start screen
-(alpha-nvim) with quick actions. See `lua/plugins/dashboard.lua`.
+(snacks.dashboard) with quick actions. See `lua/plugins/dashboard.lua`.
+
+**Keymap policy:** `lua/config/keymaps.lua` deletes any LazyVim map that
+*extends* a CJ-IDE single-key binding (`<leader>ff`, `<leader>qq`, …) — a longer
+map on the same prefix would make the single key pause for `timeoutlen`.
+LazyVim maps on free prefixes (`<leader>c…` code actions, `<leader>l` Lazy,
+`s` flash jump) are kept as bonuses.
 
 > Note: `?` is remapped from reverse-search to the cheatsheet (reverse search is
 > still `/` then `N`). It lives in `lua/config/help.lua` — delete the map there to
@@ -86,9 +100,11 @@ config/
     ├── init.lua           entry point
     ├── lazy-lock.json     pinned plugin versions (reproducible installs)
     └── lua/
-        ├── config/        options, keymaps, autocmds, lazy bootstrap, user.lua,
+        ├── config/        lazy bootstrap (LazyVim + extras), options, keymaps,
+        │                  autocmds, user.lua (the VSCode-style keys),
         │                  help (`?` cheatsheet)
-        └── plugins/       one file per concern (ui, lsp, dashboard, terminal, …)
+        └── plugins/       CJ-IDE overrides of LazyVim (core, lsp, ui,
+                           dashboard, explorer, terminal, replace, …)
 ```
 
 `config/nvim/` is the single source of truth — the installer copies it into

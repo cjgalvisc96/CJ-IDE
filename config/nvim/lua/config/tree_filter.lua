@@ -75,7 +75,8 @@ local function mark(node, re, kind, under_match, DirectoryNode)
   end
 
   if is_dir then
-    node.hidden_stats = vim.tbl_deep_extend("force", node.hidden_stats or {}, { live_filter = hidden_children })
+    node.hidden_stats =
+      vim.tbl_deep_extend("force", node.hidden_stats or {}, { live_filter = hidden_children })
   end
 
   if under_match then

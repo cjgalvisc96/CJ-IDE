@@ -29,7 +29,12 @@
 vim.api.nvim_create_autocmd("FileType", {
   pattern = "grug-far",
   callback = function(ev)
-    vim.keymap.set("n", "<localleader>c", "<localleader>q", { buffer = ev.buf, remap = true, desc = "grug-far: close" })
+    vim.keymap.set(
+      "n",
+      "<localleader>c",
+      "<localleader>q",
+      { buffer = ev.buf, remap = true, desc = "grug-far: close" }
+    )
   end,
 })
 

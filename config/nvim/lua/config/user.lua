@@ -1,5 +1,6 @@
 -- Keybindings ported to match cjgalvisc's previous VSCode (VSCodeVim) setup as
--- closely as possible. Loaded last by init.lua so it wins over the defaults.
+-- closely as possible. Loaded by config/keymaps.lua AFTER LazyVim's own
+-- keymaps, so everything here wins over the defaults.
 --
 -- HEADS UP: some of these intentionally shadow core Vim keys to preserve the
 -- VSCode muscle memory:
@@ -100,7 +101,11 @@ map("n", "<C-j>", function()
   local input = table.concat(lines, "\n")
   local minify = #lines > 1 -- already pretty (multi-line) -> minify
   local cmd = minify
-      and { "python", "-c", "import json,sys; json.dump(json.load(sys.stdin), sys.stdout, separators=(',',':'))" }
+      and {
+        "python",
+        "-c",
+        "import json,sys; json.dump(json.load(sys.stdin), sys.stdout, separators=(',',':'))",
+      }
     or { "python", "-m", "json.tool", "--indent", "2" }
   local out = vim.fn.system(cmd, input)
   if vim.v.shell_error ~= 0 then

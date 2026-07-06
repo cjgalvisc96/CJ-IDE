@@ -59,6 +59,21 @@ local SECTIONS = {
     },
   },
   {
+    "Debug (Python · DAP)",
+    {
+      { "<C-p> / F5", "Run / continue — start debugging" },
+      { "<C-b> / F9", "Toggle breakpoint on this line" },
+      { "<C-S-b> / <leader>dx", "Clear ALL breakpoints" },
+      { "<C-d> / F10", "Step over" },
+      { "<C-f> / S-F11", "Step out" },
+      { "F11 / <leader>di", "Step into" },
+      { "<C-S-p> / S-F5", "Terminate (stop) the session" },
+      { "<leader>dl", "Run last / restart" },
+      { "<leader>du / <leader>de", "Toggle debugger UI / eval (normal + visual)" },
+      { "<leader>dPt / <leader>dPc", "Debug test method / class (Python)" },
+    },
+  },
+  {
     "Edit · Motion",
     {
       { "<leader>w", "Save" },
@@ -71,6 +86,7 @@ local SECTIONS = {
       { "<leader>a", "Select whole file" },
       { "cc / <leader>x", "Copy / cut whole file to clipboard" },
       { "<C-j>", "JSON pretty / minify toggle (any file)" },
+      { "<C-s>", "Plain-file toggle — strip completion + diagnostics (all)" },
       { "<leader>md", "Markdown pretty view toggle (*.md)" },
       { "dw du db df", "Delete word/… → insert / append" },
       { "dp dq dk dc", "Delete inside ()  ''  {}  []" },

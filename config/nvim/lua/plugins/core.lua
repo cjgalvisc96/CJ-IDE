@@ -4,6 +4,11 @@ return {
   -- install.sh + config/mise/tools.txt). Servers set mason = false in lsp.lua.
   { "mason-org/mason.nvim", enabled = false },
   { "mason-org/mason-lspconfig.nvim", enabled = false },
+  -- Same reason for the debugger: dap.core ships mason-nvim-dap to fetch
+  -- adapters, but debugpy comes from mise (pipx:debugpy → `debugpy-adapter` on
+  -- PATH). Disabling it also makes dap.core's `LazyVim.has(...)` guard skip the
+  -- mason-nvim-dap setup that would otherwise error with mason gone.
+  { "jay-babu/mason-nvim-dap.nvim", enabled = false },
 
   -- NO neo-tree: selected as LazyVim's "explorer" (vim.g.lazyvim_explorer in
   -- config/options.lua) purely so LazyVim doesn't force-enable snacks_explorer

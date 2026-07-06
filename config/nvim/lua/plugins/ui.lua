@@ -44,6 +44,23 @@ return {
         offsets = {
           { filetype = "NvimTree", text = "Explorer", highlight = "Directory", separator = true },
         },
+        -- Don't clutter the tab bar with the debugger's scratch buffers: the
+        -- REPL ([dap-repl-*]), the integrated terminal ([dap-terminal]) and the
+        -- program's thread terminal (MainThread) live in the dap-ui panels, not
+        -- as editor tabs. custom_filter returns false to hide a buffer's tab.
+        custom_filter = function(buf)
+          local ft = vim.bo[buf].filetype
+          if ft == "dap-repl" or ft:match("^dapui_") then
+            return false
+          end
+          local name = vim.api.nvim_buf_get_name(buf)
+          for _, marker in ipairs({ "dap-repl", "dap-terminal", "MainThread" }) do
+            if name:find(marker, 1, true) then
+              return false
+            end
+          end
+          return true
+        end,
       },
     },
   },

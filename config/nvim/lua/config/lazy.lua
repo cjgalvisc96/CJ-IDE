@@ -31,6 +31,10 @@ require("lazy").setup({
     { import = "lazyvim.plugins.extras.lang.yaml" },
     { import = "lazyvim.plugins.extras.lang.docker" },
     { import = "lazyvim.plugins.extras.lang.markdown" },
+    -- Debugging (DAP): nvim-dap + dap-ui + virtual-text. lang.python already
+    -- wires nvim-dap-python to the `debugpy-adapter` binary (from mise on PATH),
+    -- so Python debugging works with no mason. CJ-IDE keys live in plugins/debug.lua.
+    { import = "lazyvim.plugins.extras.dap.core" },
     -- CJ-IDE's own specs/overrides — imported LAST so they win over LazyVim.
     { import = "plugins" },
   },

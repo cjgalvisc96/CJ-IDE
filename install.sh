@@ -173,6 +173,7 @@ install_tools() {
   install_section runtimes "runtimes (node, go, python, neovim)"
   install_section cli      "CLI tools (ripgrep, fd, fzf, tree-sitter)"
   install_section lsp      "LSP servers"
+  install_section dap      "debug adapters (debugpy for Python)"
 }
 
 # --- shell rc: activate mise ----------------------------------------------- #
@@ -192,6 +193,14 @@ ensure_shell_rc() {
     # shellcheck disable=SC2016
     printf '\n# Added by CJ-IDE install.sh\nexport PATH="$HOME/.local/bin:$PATH"\n%s\n' "$line" >> "$rc"
     ok "Enabled mise in $rc (restart your shell)"
+  fi
+  # Free <C-s>/<C-q> for Neovim: terminals swallow them as legacy flow control
+  # (XOFF/XON), so CJ-IDE's <C-s> "plain file" toggle never reaches nvim.
+  # Disable it for interactive shells. Skip fish (different syntax; it manages
+  # flow control itself). Marked so prune.sh can remove exactly this line.
+  if [ "$shellname" != "fish" ] && ! grep -qF 'CJ-IDE: free <C-s>' "$rc"; then
+    printf '[ -t 0 ] && stty -ixon 2>/dev/null  # CJ-IDE: free <C-s>/<C-q> for Neovim\n' >> "$rc"
+    ok "Disabled terminal flow control in $rc (frees <C-s>)"
   fi
 }
 
@@ -248,6 +257,7 @@ EXPECTED_BINS=(
   nvim node go python rg fd fzf tree-sitter
   ruff lua-language-server gopls gofumpt goimports
   basedpyright-langserver yaml-language-server vscode-json-language-server prettier
+  debugpy-adapter
 )
 doctor() {
   export PATH="$HOME/.local/share/mise/shims:$HOME/.local/bin:$PATH"

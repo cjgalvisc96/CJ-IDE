@@ -37,6 +37,8 @@ treesitter, UI polish). CJ-IDE keeps its own keymaps, look and toolchain:
   (LazyVim `editor.fzf` extra)
 - **Language extras** — python (basedpyright + ruff), go, json/yaml (with
   schemastore), docker, markdown (render-markdown pretty view)
+- **Python debugger** — nvim-dap + dap-ui, VSCode-style: `C-p` run/continue,
+  `C-b` breakpoint (debugpy comes from mise, no mason)
 - **nvim-tree** — file tree side panel (kept over LazyVim's default explorer)
 - **toggleterm** — floating terminal (`<C-\>`)
 - **No mason** — LSP servers & formatters come from mise on your `PATH`
@@ -101,6 +103,30 @@ a popup cheatsheet (`:CJHelp`).
 | `<leader>cf` | Format file (manual — format-on-save is off) |
 | `<leader>cp` | Copy file's absolute path |
 
+## Debug (Python · DAP)
+
+VSCode-style debugging via nvim-dap. Open a `.py` file, set a breakpoint, then
+run — the dap-ui panels (scopes, stacks, breakpoints, REPL) open automatically
+and inline virtual text shows variable values.
+
+| Keys | VSCode | Action |
+|------|--------|--------|
+| `C-p` | `F5` | Run / continue — start debugging |
+| `C-b` | `F9` | Toggle breakpoint on this line |
+| `C-S-b` / `<leader>dx` | — | Clear ALL breakpoints |
+| `C-d` | `F10` | Step over |
+| `C-f` | `Shift+F11` | Step out |
+| `F11` / `<leader>di` | `F11` | Step into |
+| `C-S-p` | `Shift+F5` | Terminate (stop) |
+| `<leader>dl` | `Ctrl+Shift+F5` | Run last / restart |
+| `<leader>du` / `<leader>de` | — | Toggle debugger UI / eval expression |
+| `<leader>dPt` / `<leader>dPc` | — | Debug test method / class |
+
+> `C-S-b`, `C-S-p` and the shifted F-keys only reach nvim on terminals that
+> distinguish `Shift`+key (kitty/ghostty/wezterm). If one doesn't fire, use its
+> `<leader>d…` twin — press `?` for the full list. `C-d`/`C-f` replace the
+> default half-page scroll in normal mode (CJ-IDE scrolls with `C-h`/`C-l`).
+
 ## Replace (VSCode-style panel)
 
 | Keys | Action |
@@ -123,6 +149,7 @@ a popup cheatsheet (`:CJHelp`).
 | `f` / `fa` | Toggle fold under cursor / toggle ALL folds (open all ⇄ close all) |
 | `<leader>a` · `cc` · `<leader>x` | Select all · copy file · cut file (to clipboard) |
 | `C-j` | JSON pretty ⇄ minify (any buffer) |
+| `C-s` | Plain-file toggle — strip completion **and** diagnostics for a bare file |
 | `<leader>md` | Markdown pretty view toggle |
 | `dw` `du` `db` `df` | Delete word / … → insert / append |
 | `dp` `dq` `dk` `dc` | Delete inside `()` `''` `{}` `[]` → insert |

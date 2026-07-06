@@ -144,6 +144,19 @@ remove_rc_block() {
   esac
   [ -f "$rc" ] || { info "No $rc"; return; }
 
+  # Drop the flow-control line first (added independently of the mise block, so
+  # it must be removed even when no mise block is present).
+  if grep -qF 'CJ-IDE: free <C-s>' "$rc"; then
+    if [ "$DRY_RUN" -eq 1 ]; then
+      printf "%s[dry-run]%s strip flow-control line from %s\n" "$Y" "$R" "$rc"
+    else
+      local tmp_fc; tmp_fc="$(mktemp)"
+      grep -vF 'CJ-IDE: free <C-s>' "$rc" > "$tmp_fc" && cat "$tmp_fc" > "$rc"
+      rm -f "$tmp_fc"
+      ok "Removed flow-control line from $rc"
+    fi
+  fi
+
   # Match the marker written by install.sh (current + legacy wording) and drop
   # the marker line plus the two lines it added (export PATH + mise activate).
   if ! grep -qE '# Added by (CJ-IDE|Neovim IDE) install\.sh' "$rc"; then

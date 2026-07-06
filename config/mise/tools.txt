@@ -41,3 +41,9 @@ go:golang.org/x/tools/gopls@0.22
 npm:basedpyright@1.39
 npm:yaml-language-server@1.23
 npm:vscode-langservers-extracted@4.10
+
+# [dap]
+# Python debugger. mise's pipx backend installs debugpy (via uv) and exposes a
+# standalone `debugpy-adapter` executable on PATH — which nvim-dap-python uses
+# directly, so there is no mason. See lua/plugins/debug.lua.
+pipx:debugpy@1.8

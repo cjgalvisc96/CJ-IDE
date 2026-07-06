@@ -116,6 +116,28 @@ map("n", "<C-j>", function()
   vim.api.nvim_buf_set_lines(0, 0, -1, false, vim.split(out, "\n"))
   vim.notify(minify and "JSON minified" or "JSON prettified")
 end, { desc = "JSON pretty/minify toggle" })
+
+-- <C-s> = "plain file" master switch for the whole session (all buffers). One
+-- press strips EVERYTHING the language tooling draws — autocompletion +
+-- signature help (blink.cmp) AND all diagnostics (LSP/linter messages, their
+-- virtual text, gutter signs and underlines) — leaving a bare Python (or any)
+-- file: just text. Press again to bring the full IDE back. (Inline ghost-text
+-- suggestions stay off always — see plugins/completion.lua.) Works in normal
+-- AND insert mode; any open completion menu is hidden on the way out. blink
+-- reads the switch live. NOTE: terminals eat <C-s> as flow control (XOFF) —
+-- install.sh disables that with `stty -ixon`; <C-q> unfreezes a stuck terminal.
+map({ "n", "i" }, "<C-s>", function()
+  local on = vim.g.blink_cmp_enabled ~= false -- full IDE now? (default = on)
+  vim.g.blink_cmp_enabled = not on -- gates completion + signature help
+  vim.diagnostic.enable(not on) -- gates diagnostics / linter / problems
+  if on then
+    pcall(function()
+      require("blink.cmp").hide()
+    end)
+  end
+  vim.notify(on and "Plain file — assist OFF" or "Assist ON")
+end, { desc = "Toggle plain file (completion + diagnostics)" })
+
 -- Quick-open ANY file — including dotfiles and gitignored ones (matches the
 -- tree, which shows them too), still skipping the .git/.jj folders themselves.
 map("n", "<leader>p", function()

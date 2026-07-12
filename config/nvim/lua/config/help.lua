@@ -88,6 +88,7 @@ local SECTIONS = {
       { "<C-j>", "JSON pretty / minify toggle (any file)" },
       { "<C-s>", "Plain-file toggle — strip completion + diagnostics (all)" },
       { "<leader>md", "Markdown pretty view toggle (*.md)" },
+      { "<leader>mp", "Markdown browser preview — wraps wide tables (*.md)" },
       { "dw du db df", "Delete word/… → insert / append" },
       { "dp dq dk dc", "Delete inside ()  ''  {}  []" },
       { "yf yu yb", "Yank to end / word / to start" },

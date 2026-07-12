@@ -36,7 +36,8 @@ treesitter, UI polish). CJ-IDE keeps its own keymaps, look and toolchain:
 - **fzf-lua** — fuzzy finder (files, grep, symbols, diagnostics) + LSP nav
   (LazyVim `editor.fzf` extra)
 - **Language extras** — python (basedpyright + ruff), go, json/yaml (with
-  schemastore), docker, markdown (markview Obsidian-style pretty view)
+  schemastore), docker, markdown (markview Obsidian-style pretty view +
+  browser preview on `<leader>mp`)
 - **Python debugger** — nvim-dap + dap-ui, VSCode-style: `C-p` run/continue,
   `C-b` breakpoint (debugpy comes from mise, no mason)
 - **nvim-tree** — file tree side panel (kept over LazyVim's default explorer)
@@ -151,6 +152,7 @@ and inline virtual text shows variable values.
 | `C-j` | JSON pretty ⇄ minify (any buffer) |
 | `C-s` | Plain-file toggle — strip completion **and** diagnostics for a bare file |
 | `<leader>md` | Markdown pretty view toggle |
+| `<leader>mp` | Markdown browser preview (GitHub-styled; wraps wide tables) |
 | `dw` `du` `db` `df` | Delete word / … → insert / append |
 | `dp` `dq` `dk` `dc` | Delete inside `()` `''` `{}` `[]` → insert |
 | `yf` `yu` `yb` | Yank to line end / word / to line start |

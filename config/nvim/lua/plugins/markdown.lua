@@ -4,11 +4,26 @@
 -- preview). Toggle it off/on with <leader>md to drop back to the raw text;
 -- insert mode always shows the raw markup for editing.
 return {
-  -- LazyVim's lang.markdown extra ships two renderers CJ-IDE doesn't use:
-  -- markdown-preview.nvim (browser preview whose <leader>cp shadows CJ-IDE's
-  -- "copy file path") and render-markdown.nvim (replaced by markview below).
-  { "iamcco/markdown-preview.nvim", enabled = false },
+  -- render-markdown.nvim (the extra's in-buffer renderer) is replaced by the
+  -- fancier markview below.
   { "MeanderingProgrammer/render-markdown.nvim", enabled = false },
+
+  -- Browser preview (GitHub-styled HTML, live scroll sync) — the only view
+  -- that can wrap long table cells to fit the screen; a terminal buffer can't
+  -- reflow text. The extra binds it to <leader>cp, which shadows CJ-IDE's
+  -- "copy file path" in markdown buffers — move it to <leader>mp.
+  {
+    "iamcco/markdown-preview.nvim",
+    keys = {
+      { "<leader>cp", false, ft = "markdown" },
+      {
+        "<leader>mp",
+        "<cmd>MarkdownPreviewToggle<cr>",
+        desc = "Markdown: browser preview",
+        ft = "markdown",
+      },
+    },
+  },
 
   -- The extra also lints markdown with markdownlint-cli2, which CJ-IDE does
   -- not install (no mason) — every open/save popped an ENOENT error. Drop it.

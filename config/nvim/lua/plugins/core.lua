@@ -25,4 +25,18 @@ return {
   -- <leader>gh* maps — they'd put a timeout wait on CJ-IDE's single-key
   -- <leader>g search in every git-tracked buffer.
   { "lewis6991/gitsigns.nvim", opts = { on_attach = function() end } },
+
+  -- Prune LazyVim plugins CJ-IDE can't reach: their only entry points are
+  -- <leader> prefix maps that keymaps.lua deletes (see its header), so they
+  -- would ship as dead weight.
+  -- Sessions: <leader>q* maps pruned and the CJ-IDE dashboard has no
+  -- "restore session" button, so a saved session could never be loaded.
+  { "folke/persistence.nvim", enabled = false },
+  -- Diagnostics/symbols panels: <leader>x* maps pruned; fzf-lua, lualine and
+  -- todo-comments guard their trouble integrations with LazyVim.has().
+  { "folke/trouble.nvim", enabled = false },
+  -- Second colorscheme LazyVim ships; CJ-IDE is tokyonight-night.
+  { "catppuccin/nvim", enabled = false },
+  -- Auto-closes HTML/JSX tags — CJ-IDE ships no web languages.
+  { "windwp/nvim-ts-autotag", enabled = false },
 }

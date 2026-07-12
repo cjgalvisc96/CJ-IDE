@@ -32,11 +32,11 @@ treesitter, UI polish). CJ-IDE keeps its own keymaps, look and toolchain:
 - **LazyVim core** — tokyonight theme, **lualine** statusline (shows the file's
   absolute path), **bufferline** tabs, **which-key** hints, **blink.cmp**
   completion + signature help, treesitter (`main` branch), gitsigns, flash,
-  trouble, noice, snacks (dashboard shows the CJ-IDE banner)
+  noice, snacks (dashboard shows the CJ-IDE banner)
 - **fzf-lua** — fuzzy finder (files, grep, symbols, diagnostics) + LSP nav
   (LazyVim `editor.fzf` extra)
 - **Language extras** — python (basedpyright + ruff), go, json/yaml (with
-  schemastore), docker, markdown (render-markdown pretty view)
+  schemastore), docker, markdown (markview Obsidian-style pretty view)
 - **Python debugger** — nvim-dap + dap-ui, VSCode-style: `C-p` run/continue,
   `C-b` breakpoint (debugpy comes from mise, no mason)
 - **nvim-tree** — file tree side panel (kept over LazyVim's default explorer)

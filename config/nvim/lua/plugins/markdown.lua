@@ -1,25 +1,38 @@
--- Markdown — render-markdown.nvim comes from LazyVim's lang.markdown extra
--- (see config/lazy.lua); CJ-IDE tweaks on top:
---
--- Rendering is ON automatically when you open a *.md file. Toggle it off/on
--- with <leader>md to drop back to the raw text (e.g. to copy exact markup).
+-- Markdown — CJ-IDE renders markdown in-buffer with markview.nvim
+-- (Obsidian-style: heading pills, callouts, fancy tables). Rendering is ON
+-- automatically when you open a *.md file (this IS the CJ-IDE markdown
+-- preview). Toggle it off/on with <leader>md to drop back to the raw text;
+-- insert mode always shows the raw markup for editing.
 return {
-  -- The extra also ships markdown-preview.nvim (browser preview) bound to
-  -- <leader>cp — that shadows CJ-IDE's "copy file path" in markdown buffers.
-  -- Drop it: render-markdown below IS the CJ-IDE markdown preview.
+  -- LazyVim's lang.markdown extra ships two renderers CJ-IDE doesn't use:
+  -- markdown-preview.nvim (browser preview whose <leader>cp shadows CJ-IDE's
+  -- "copy file path") and render-markdown.nvim (replaced by markview below).
   { "iamcco/markdown-preview.nvim", enabled = false },
+  { "MeanderingProgrammer/render-markdown.nvim", enabled = false },
+
+  -- The extra also lints markdown with markdownlint-cli2, which CJ-IDE does
+  -- not install (no mason) — every open/save popped an ENOENT error. Drop it.
+  {
+    "mfussenegger/nvim-lint",
+    optional = true,
+    opts = function(_, opts)
+      if opts.linters_by_ft then
+        opts.linters_by_ft.markdown = nil
+      end
+    end,
+  },
 
   {
-    "MeanderingProgrammer/render-markdown.nvim",
+    "OXY2DEV/markview.nvim",
+    -- markview manages its own lazy-loading; loading it lazily is unsupported.
+    lazy = false,
     opts = {
-      -- Render in normal mode; on the line you're editing the raw markup shows
-      -- through, so inserting/selecting still sees the real characters.
-      render_modes = { "n", "c" },
+      preview = { icon_provider = "mini" },
     },
     keys = {
       {
         "<leader>md",
-        "<cmd>RenderMarkdown toggle<cr>",
+        "<cmd>Markview Toggle<cr>",
         desc = "Markdown: toggle pretty view",
         ft = "markdown",
       },
